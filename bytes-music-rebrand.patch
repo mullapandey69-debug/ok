@@ -1,0 +1,2111 @@
+diff --git a/.github/workflows/bytes-music-apk.yml b/.github/workflows/bytes-music-apk.yml
+new file mode 100644
+index 0000000..722c3c7
+--- /dev/null
++++ b/.github/workflows/bytes-music-apk.yml
+@@ -0,0 +1,44 @@
++name: Build Bytes Music APK
++
++on:
++  workflow_dispatch:
++  push:
++    branches: [ "main" ]
++
++permissions:
++  contents: read
++
++jobs:
++  build:
++    name: Build debug APK
++    runs-on: ubuntu-latest
++
++    steps:
++    - name: Checkout
++      uses: actions/checkout@v4
++      with:
++        submodules: recursive
++
++    - name: Set up JDK 21
++      uses: actions/setup-java@v4
++      with:
++        java-version: '21'
++        distribution: 'temurin'
++        cache: gradle
++
++    - name: Install Android SDK components
++      run: |
++        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
++        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.2.13676358" "platforms;android-37" "build-tools;37.0.0" || true
++
++    - name: Build universal FOSS debug APK
++      run: |
++        chmod +x gradlew
++        ./gradlew assembleUniversalFossDebug --no-daemon
++
++    - name: Upload APK
++      uses: actions/upload-artifact@v4
++      with:
++        name: Bytes-Music-APK
++        path: app/build/outputs/apk/**/*.apk
++        if-no-files-found: error
+diff --git a/README.md b/README.md
+index 859a36f..4c4c378 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,5 @@
+ <div align="center">
+-  <img src="assets/banner.png" alt="Echo Music Logo"/>
++  <img src="assets/banner.png" alt="Bytes Music Logo"/>
+ 
+   <p><b>A modern Android music app with ad-free streaming, synced lyrics, offline playback, and an intuitive user experience.</b></p>
+ </div>
+@@ -13,16 +13,16 @@
+ 
+ ## Overview
+ 
+-Echo Music delivers a seamless, premium listening experience by leveraging YouTube Music's vast library — without the ads. It adds powerful extras including offline downloads, real-time synchronized lyrics, and environment-aware music recognition.
++Bytes Music delivers a seamless, premium listening experience by leveraging YouTube Music's vast library — without the ads. It adds powerful extras including offline downloads, real-time synchronized lyrics, and environment-aware music recognition.
+ 
+ > [!IMPORTANT]
+-> **In-app OTA updates have been permanently removed.** Please update manually via the website. Echo Music is completely free and ad-free; the few ads shown during a manual download help support the ongoing development of this project. Please do not open issues requesting to bring this back. Thank you for your support!
++> **In-app OTA updates have been permanently removed.** Please update manually via the website. Bytes Music is completely free and ad-free; the few ads shown during a manual download help support the ongoing development of this project. Please do not open issues requesting to bring this back. Thank you for your support!
+ 
+ ---
+ 
+ ## Community
+ 
+-**Discord**: [Join the Echo Music Discord server](https://discord.gg/Xt5hgsJJuA)
++**Discord**: [Join the Bytes Music Discord server](https://discord.gg/Xt5hgsJJuA)
+ 
+ ---
+ 
+@@ -87,7 +87,7 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
+ 
+ ### What's New
+ 
+-> **Music DNA (New!)** — Instantly uncover the backstory of any track. Echo Music queries Genius for deep track annotations, and intelligently falls back to Wikipedia API extracts for regional or obscure tracks where crowd-sourced meanings are missing.
++> **Music DNA (New!)** — Instantly uncover the backstory of any track. Bytes Music queries Genius for deep track annotations, and intelligently falls back to Wikipedia API extracts for regional or obscure tracks where crowd-sourced meanings are missing.
+ 
+ <br>
+ 
+@@ -167,9 +167,9 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
+ 
+ ## 320 kbps Audio Extension
+ 
+-Want to experience crystal-clear, high-bitrate **320 kbps** audio in Echo Music?
++Want to experience crystal-clear, high-bitrate **320 kbps** audio in Bytes Music?
+ 
+-By default, YouTube Music delivers standard streaming quality. Echo Music includes built-in support for third-party extension sources, allowing you to stream high-fidelity **320 kbps** audio directly within the app using the official 320 kbps extension!
++By default, YouTube Music delivers standard streaming quality. Bytes Music includes built-in support for third-party extension sources, allowing you to stream high-fidelity **320 kbps** audio directly within the app using the official 320 kbps extension!
+ 
+ Visit the official repository to get started:  
+ **[https://github.com/EchoMusicApp/320kbs-extension](https://github.com/EchoMusicApp/320kbs-extension)**
+@@ -180,8 +180,8 @@ Visit the official repository to get started:
+    - Go to [EchoMusicApp/320kbs-extension](https://github.com/EchoMusicApp/320kbs-extension).
+    - Follow the setup and deployment instructions in the repository to deploy or obtain your extension server endpoint.
+ 
+-2. **Add the Server in Echo Music**:
+-   - Open the Echo Music app on your Android device.
++2. **Add the Server in Bytes Music**:
++   - Open the Bytes Music app on your Android device.
+    - Tap your profile avatar in the top-right corner to open the **Account** sheet.
+    - Tap **Extensions** to open the Extension Sources settings.
+    - Scroll down to the **Add new** section and tap **Add Custom Server**.
+@@ -190,16 +190,16 @@ Visit the official repository to get started:
+ 
+ 3. **Set Playback Priority**:
+    - In the **Extensions** menu, ensure **Prefer Extension Audio** is toggled **ON**.
+-   - With this enabled, Echo Music will automatically search and stream high-bitrate 320 kbps audio from your extension before falling back to YouTube Music.
++   - With this enabled, Bytes Music will automatically search and stream high-bitrate 320 kbps audio from your extension before falling back to YouTube Music.
+    - Enjoy studio-quality 320 kbps playback with real-time format and bitrate indicators on the now playing screen!
+ 
+ ---
+ 
+ ## Lossless Audio Extension
+ 
+-Want to experience studio-master **Lossless (FLAC / ALAC)** and **Hi-Res Audio** (up to 24-bit / 192 kHz) directly in Echo Music?
++Want to experience studio-master **Lossless (FLAC / ALAC)** and **Hi-Res Audio** (up to 24-bit / 192 kHz) directly in Bytes Music?
+ 
+-Echo Music features a dedicated lossless audio pipeline with bit-perfect DAC pass-through, real-time Bluetooth codec telemetry (LDAC, aptX HD), and live format badges (`FLAC`, `Hi-Res`, `Bit-Perfect`). By connecting the official **Lossless Extension**, you can stream uncompressed, bit-perfect music from lossless providers directly within the app!
++Bytes Music features a dedicated lossless audio pipeline with bit-perfect DAC pass-through, real-time Bluetooth codec telemetry (LDAC, aptX HD), and live format badges (`FLAC`, `Hi-Res`, `Bit-Perfect`). By connecting the official **Lossless Extension**, you can stream uncompressed, bit-perfect music from lossless providers directly within the app!
+ 
+ Visit the official repository to get started:  
+ **[https://github.com/EchoMusicApp/lossless-extension](https://github.com/EchoMusicApp/lossless-extension)**
+@@ -210,8 +210,8 @@ Visit the official repository to get started:
+    - Go to [EchoMusicApp/lossless-extension](https://github.com/EchoMusicApp/lossless-extension).
+    - Follow the setup and deployment instructions to deploy your lossless provider instance (e.g., via Vercel, Railway, Docker, or self-hosted server) or obtain your custom lossless endpoint URL.
+ 
+-2. **Add the Lossless Server in Echo Music**:
+-   - Open the Echo Music app on your Android device.
++2. **Add the Lossless Server in Bytes Music**:
++   - Open the Bytes Music app on your Android device.
+    - Tap your profile avatar (or the **Settings** gear icon) to open the **Account / Settings** sheet.
+    - Tap **Extensions** to open the Extension Sources screen.
+    - Scroll down to the **Add new** section and tap **Add Custom Server**.
+@@ -222,9 +222,9 @@ Visit the official repository to get started:
+ 
+ 3. **Configure Playback Priority & Audio Pipeline**:
+    - In the **Extensions** menu, ensure **Prefer Extension Audio** is toggled **ON**.
+-   - When enabled, Echo Music will prioritize searching and streaming uncompressed FLAC/ALAC audio from your lossless server before falling back to YouTube Music.
++   - When enabled, Bytes Music will prioritize searching and streaming uncompressed FLAC/ALAC audio from your lossless server before falling back to YouTube Music.
+    - *(Optional — Audiophile Hardware)*:
+-     - **External USB DAC**: Connect a USB DAC via OTG to automatically activate Echo Music's **Bit-Perfect Audio Pipeline**, bypassing Android's OS resampling engine (`Bit-Perfect • 24-bit / 192 kHz`).
++     - **External USB DAC**: Connect a USB DAC via OTG to automatically activate Bytes Music's **Bit-Perfect Audio Pipeline**, bypassing Android's OS resampling engine (`Bit-Perfect • 24-bit / 192 kHz`).
+      - **Hi-Res Bluetooth**: Connect headphones supporting LDAC, aptX HD, or LC3 to view real-time Bluetooth telemetry and the gold **Hi-Res** badge on the player.
+ 
+ 4. **Verify Lossless Playback**:
+@@ -276,7 +276,7 @@ Download the latest pre-compiled APK from the [Releases Page](https://github.com
+ 
+ ## Support the Project
+ 
+-If Echo Music has been useful to you, consider supporting its development.
++If Bytes Music has been useful to you, consider supporting its development.
+ 
+ <div align="left">
+   <table style="margin: 0 auto; border-collapse: collapse; border: none;">
+@@ -312,7 +312,7 @@ If Echo Music has been useful to you, consider supporting its development.
+ 
+ ## Contributors
+ 
+-Without the support of this incredible open-source community, none of this would be possible. Thank you to everyone who has contributed to Echo Music!
++Without the support of this incredible open-source community, none of this would be possible. Thank you to everyone who has contributed to Bytes Music!
+ 
+ <!-- readme: contributors -start -->
+ <table>
+@@ -327,7 +327,7 @@ Without the support of this incredible open-source community, none of this would
+ 
+ ## Special Thanks
+ 
+-Echo Music stands on the shoulders of several excellent open-source projects. Sincere thanks to:
++Bytes Music stands on the shoulders of several excellent open-source projects. Sincere thanks to:
+ 
+ | Project                                                                                                                   | Description                                         |
+ | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------- |
+@@ -344,15 +344,15 @@ Echo Music stands on the shoulders of several excellent open-source projects. Si
+ 
+ ### 1. 100% Free, Open-Source & Strictly Non-Commercial
+ 
+-Echo Music is a fully open-source project (FOSS) created purely for educational purposes and personal use. We do not sell this application, nor do we monetize it in any way. There are no advertisements, no premium features, no subscriptions, and no hidden fees within the app. This project has absolutely no commercial value or financial intent.
++Bytes Music is a fully open-source project (FOSS) created purely for educational purposes and personal use. We do not sell this application, nor do we monetize it in any way. There are no advertisements, no premium features, no subscriptions, and no hidden fees within the app. This project has absolutely no commercial value or financial intent.
+ 
+ ### 2. A Custom Browser with Content Filtering
+ 
+-Echo Music acts strictly as a specialized, third-party web browser and client. It simply parses the publicly available website content and APIs of YouTube and YouTube Music, rendering them in a custom user interface. The ad-free experience it provides is fundamentally no different from using a standard web browser (like Chrome, Firefox, or Brave) equipped with a common ad-blocking extension (such as uBlock Origin).
++Bytes Music acts strictly as a specialized, third-party web browser and client. It simply parses the publicly available website content and APIs of YouTube and YouTube Music, rendering them in a custom user interface. The ad-free experience it provides is fundamentally no different from using a standard web browser (like Chrome, Firefox, or Brave) equipped with a common ad-blocking extension (such as uBlock Origin).
+ 
+ ### 3. Support Content Creators
+ 
+-We deeply respect the hard work of artists, musicians, and content creators. We strongly encourage all users to subscribe to [YouTube Premium](https://www.youtube.com/premium). Purchasing a Premium subscription is the best way to financially support the creators you listen to and ensure the continued growth of the platform. Echo Music is built as a proof-of-concept for developers and enthusiasts, not to harm creators' revenues.
++We deeply respect the hard work of artists, musicians, and content creators. We strongly encourage all users to subscribe to [YouTube Premium](https://www.youtube.com/premium). Purchasing a Premium subscription is the best way to financially support the creators you listen to and ensure the continued growth of the platform. Bytes Music is built as a proof-of-concept for developers and enthusiasts, not to harm creators' revenues.
+ 
+ ### 4. No Hosting of Copyrighted Material
+ 
+@@ -360,7 +360,7 @@ We do not host, upload, distribute, or store any audio, video, or copyrighted me
+ 
+ ### 5. User Responsibility & Legal Contact
+ 
+-The software is provided "AS IS", without warranty of any kind. The developers of Echo Music do not encourage or condone piracy. Users are solely responsible for ensuring their usage of this app complies with their local copyright laws and the Terms of Service of the platforms they access.
++The software is provided "AS IS", without warranty of any kind. The developers of Bytes Music do not encourage or condone piracy. Users are solely responsible for ensuring their usage of this app complies with their local copyright laws and the Terms of Service of the platforms they access.
+ 
+ Because we do not host any media files, we cannot process DMCA takedown requests for audio or video content. However, if you represent a copyright holder or have legal concerns regarding the open-source code itself, please contact us via email at: [hello@echomusic.fun](mailto:hello@echomusic.fun)
+ 
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index b29437c..5f02fda 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -30,7 +30,7 @@ android {
+   ndkVersion = "28.2.13676358"
+ 
+   defaultConfig {
+-    applicationId = "echo.music.iad1tya"
++    applicationId = "com.bytesmusic.app"
+     minSdk = 26
+     targetSdk = 36
+     versionCode = 165
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index ce2e5e7..5b55224 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -125,7 +125,7 @@
+                 <data android:host="listen" />
+             </intent-filter>
+ 
+-            <!-- Echo Music Share Links -->
++            <!-- Bytes Music Share Links -->
+             <intent-filter android:autoVerify="true">
+                 <action android:name="android.intent.action.VIEW" />
+ 
+diff --git a/app/src/main/kotlin/com/music/echo/MainActivity.kt b/app/src/main/kotlin/com/music/echo/MainActivity.kt
+index d88f099..c8cd9f6 100644
+--- a/app/src/main/kotlin/com/music/echo/MainActivity.kt
++++ b/app/src/main/kotlin/com/music/echo/MainActivity.kt
+@@ -1158,7 +1158,7 @@ class MainActivity : ComponentActivity() {
+ 
+         val currentTitle =
+           when (navBackStackEntry?.destination?.route) {
+-            Screens.Home.route -> "Echo Music"
++            Screens.Home.route -> "Bytes Music"
+             Screens.Search.route -> stringResource(R.string.search)
+             Screens.Library.route -> stringResource(R.string.filter_library)
+             Screens.ListenTogether.route -> stringResource(R.string.together)
+diff --git a/app/src/main/kotlin/com/music/echo/ai/AiRecommendationHelper.kt b/app/src/main/kotlin/com/music/echo/ai/AiRecommendationHelper.kt
+index bd04285..4941434 100644
+--- a/app/src/main/kotlin/com/music/echo/ai/AiRecommendationHelper.kt
++++ b/app/src/main/kotlin/com/music/echo/ai/AiRecommendationHelper.kt
+@@ -34,7 +34,7 @@ object AiRecommendationHelper {
+       .writeTimeout(30, TimeUnit.SECONDS)
+       .build()
+ 
+-  private const val PLAYLIST_NAME = "From your taste by Echo Music"
++  private const val PLAYLIST_NAME = "From your taste by Bytes Music"
+ 
+   suspend fun generateRecommendations(context: Context, onLog: (suspend (String) -> Unit)? = null) =
+     withContext(Dispatchers.IO) {
+diff --git a/app/src/main/kotlin/com/music/echo/discord/DiscordSocialPresenceClient.kt b/app/src/main/kotlin/com/music/echo/discord/DiscordSocialPresenceClient.kt
+index 4fd8478..0b3ab20 100644
+--- a/app/src/main/kotlin/com/music/echo/discord/DiscordSocialPresenceClient.kt
++++ b/app/src/main/kotlin/com/music/echo/discord/DiscordSocialPresenceClient.kt
+@@ -108,7 +108,7 @@ object DiscordSocialPresenceClient {
+ 
+     val activityJson = JSONObject()
+ 
+-    activityJson.put("name", activity.name ?: "Echo Music")
++    activityJson.put("name", activity.name ?: "Bytes Music")
+     activityJson.put("type", activity.type.nativeValue)
+ 
+     activity.details?.let { activityJson.put("details", it) }
+diff --git a/app/src/main/kotlin/com/music/echo/discord/GatewayClient.kt b/app/src/main/kotlin/com/music/echo/discord/GatewayClient.kt
+index c2f5974..eeeba71 100644
+--- a/app/src/main/kotlin/com/music/echo/discord/GatewayClient.kt
++++ b/app/src/main/kotlin/com/music/echo/discord/GatewayClient.kt
+@@ -298,9 +298,9 @@ class GatewayClient {
+     d.put("token", token)
+     val properties = JSONObject()
+     properties.put("os", "Android")
+-    properties.put("browser", "Echo Music")
++    properties.put("browser", "Bytes Music")
+     properties.put("device", "Android")
+-    properties.put("browser_user_agent", "Echo Music")
++    properties.put("browser_user_agent", "Bytes Music")
+     properties.put("browser_version", "1.0")
+     properties.put("client_version", "1.0")
+     properties.put("client_build_number", 1)
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/SettingDialoge.kt b/app/src/main/kotlin/com/music/echo/ui/screens/SettingDialoge.kt
+index 38c525e..122a8c7 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/SettingDialoge.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/SettingDialoge.kt
+@@ -75,7 +75,7 @@ fun SettingDialoge(
+       verticalArrangement = Arrangement.spacedBy(12.dp)
+     ) {
+       // Header
+-      // Removed Echo Music text
++      // Removed Bytes Music text
+ 
+       // Account Group
+       Material3SettingsGroup(
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/WelcomeDialog.kt b/app/src/main/kotlin/com/music/echo/ui/screens/WelcomeDialog.kt
+index 1fcb5cf..5566de1 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/WelcomeDialog.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/WelcomeDialog.kt
+@@ -181,7 +181,7 @@ private fun WelcomeAppCard() {
+       )
+       Spacer(Modifier.height(4.dp))
+       Text(
+-        text = "Echo Music",
++        text = "Bytes Music",
+         style = MaterialTheme.typography.titleLarge,
+         fontWeight = FontWeight.Bold,
+         color = MaterialTheme.colorScheme.onSurface,
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/settings/AboutScreen.kt b/app/src/main/kotlin/com/music/echo/ui/screens/settings/AboutScreen.kt
+index cd9df0a..80d3e3d 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/settings/AboutScreen.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/settings/AboutScreen.kt
+@@ -335,7 +335,7 @@ private fun AboutAppCard() {
+     Spacer(Modifier.height(4.dp))
+ 
+     Text(
+-      text = if (rotation <= 90f) "Echo Music" else "Developed by Aditya",
++      text = if (rotation <= 90f) "Bytes Music" else "Developed by Aditya",
+       style = MaterialTheme.typography.titleLarge,
+       fontWeight = FontWeight.Bold,
+       color = MaterialTheme.colorScheme.onSurface,
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordExperimental.kt b/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordExperimental.kt
+index 85855a9..8990d6e 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordExperimental.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordExperimental.kt
+@@ -54,7 +54,7 @@ fun DiscordExperimental(navController: NavController) {
+   val (button2Label, onButton2LabelChange) =
+     rememberPreference(
+       key = DiscordActivityButton2LabelKey,
+-      defaultValue = "Go to Echo Music",
++      defaultValue = "Go to Bytes Music",
+     )
+   val (button2Enabled, onButton2EnabledChange) =
+     rememberPreference(
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordSettings.kt b/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordSettings.kt
+index 9f340e5..6c34b19 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordSettings.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/settings/DiscordSettings.kt
+@@ -273,7 +273,7 @@ fun DiscordSettings(
+   val (button2Label) =
+     rememberPreference(
+       key = DiscordActivityButton2LabelKey,
+-      defaultValue = "Go to Echo Music",
++      defaultValue = "Go to Bytes Music",
+     )
+   val (button2Enabled) =
+     rememberPreference(
+@@ -1173,7 +1173,7 @@ fun RichPresence(
+   button1Enabled: Boolean = true,
+   button1UrlSource: String = "songurl",
+   button1CustomUrl: String = "",
+-  button2Label: String = "Go to Echo Music",
++  button2Label: String = "Go to Bytes Music",
+   button2Enabled: Boolean = true,
+   button2UrlSource: String = "custom",
+   button2CustomUrl: String = "https://github.com/EchoMusicApp/Echo-Music",
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/settings/ListenBrainzManager.kt b/app/src/main/kotlin/com/music/echo/ui/screens/settings/ListenBrainzManager.kt
+index ef9b6f9..552e5e0 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/settings/ListenBrainzManager.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/settings/ListenBrainzManager.kt
+@@ -84,7 +84,7 @@ object ListenBrainzManager {
+                     artistNames,
+                 )}\",\"track_name\":\"${escapeJson(
+                     title,
+-                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"position_ms\":$positionMs,\"submission_client\":\"Echo Music\",\"submission_client_version\":\"5.2.89\"}}}"
++                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"position_ms\":$positionMs,\"submission_client\":\"Bytes Music\",\"submission_client_version\":\"5.2.89\"}}}"
+         val listensJson = "[$trackMetadata]"
+         val bodyJson = "{\"listen_type\":\"playing_now\",\"payload\":$listensJson}"
+         Timber.tag(logTag).d("submitPlayingNow JSON: %s", bodyJson)
+@@ -153,7 +153,7 @@ object ListenBrainzManager {
+                     artistNames,
+                 )}\",\"track_name\":\"${escapeJson(
+                     title,
+-                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"start_ms\":$startMs,\"end_ms\":$endMs,\"submission_client\":\"Echo Music\",\"submission_client_version\":\"5.2.89\"}}}"
++                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"start_ms\":$startMs,\"end_ms\":$endMs,\"submission_client\":\"Bytes Music\",\"submission_client_version\":\"5.2.89\"}}}"
+         val listensJson = "[$trackMetadataSingle]"
+         val bodyJson = "{\"listen_type\":\"single\",\"payload\":$listensJson}"
+         Timber.tag(logTag).d("submitFinished JSON: %s", bodyJson)
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/settings/SearchableSettings.kt b/app/src/main/kotlin/com/music/echo/ui/screens/settings/SearchableSettings.kt
+index f443e97..ebd2c8a 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/settings/SearchableSettings.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/settings/SearchableSettings.kt
+@@ -2200,13 +2200,13 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
+     ),
+ 
+     // About Screen - Social & Support Links
+-    SearchableSetting("Website", "Visit the Echo Music website", "About", "settings/about"),
+-    SearchableSetting("Instagram", "Follow Echo Music on Instagram", "About", "settings/about"),
+-    SearchableSetting("X (Twitter)", "Follow Echo Music on X", "About", "settings/about"),
++    SearchableSetting("Website", "Visit the Bytes Music website", "About", "settings/about"),
++    SearchableSetting("Instagram", "Follow Bytes Music on Instagram", "About", "settings/about"),
++    SearchableSetting("X (Twitter)", "Follow Bytes Music on X", "About", "settings/about"),
+     SearchableSetting("Buy Me a Coffee", "Support the developer", "About", "settings/about"),
+     SearchableSetting("Patreon", "Support the developer on Patreon", "About", "settings/about"),
+     SearchableSetting("UPI", "Support the developer via UPI", "About", "settings/about"),
+-    SearchableSetting("Discord", "Join the Echo Music community", "About", "settings/about"),
++    SearchableSetting("Discord", "Join the Bytes Music community", "About", "settings/about"),
+   ) + listOf(
+     SearchableSetting(
+       "Show Button 1",
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedScreen.kt b/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedScreen.kt
+index b188a98..b837a99 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedScreen.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedScreen.kt
+@@ -331,7 +331,7 @@ fun WrappedScreen(
+             }
+           }
+ 
+-          // Top Header: Echo Music Logo + Wordmark + Year Selector + Controls
++          // Top Header: Bytes Music Logo + Wordmark + Year Selector + Controls
+           Row(
+             modifier =
+               Modifier.fillMaxWidth()
+@@ -346,12 +346,12 @@ fun WrappedScreen(
+             ) {
+               Image(
+                 painter = painterResource(R.drawable.ic_launcher_nobg),
+-                contentDescription = "Echo Music Logo",
++                contentDescription = "Bytes Music Logo",
+                 colorFilter = ColorFilter.tint(currentTheme.logoTint),
+                 modifier = Modifier.size(24.dp)
+               )
+               Text(
+-                "Echo Music",
++                "Bytes Music",
+                 style = MaterialTheme.typography.titleMedium.copy(
+                   fontWeight = FontWeight.Black,
+                   letterSpacing = (-0.5).sp,
+@@ -615,7 +615,7 @@ private fun IntroSlideSpotify(
+ 
+     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+       Text(
+-        text = "Every beat, replay, and late-night obsession that soundtracked your life on Echo Music.",
++        text = "Every beat, replay, and late-night obsession that soundtracked your life on Bytes Music.",
+         style = MaterialTheme.typography.bodyLarge.copy(
+           fontSize = 16.sp,
+           fontWeight = FontWeight.Medium,
+@@ -2026,7 +2026,7 @@ private fun InsufficientDataView(
+     ) {
+       Image(
+         painter = painterResource(R.drawable.ic_launcher_nobg),
+-        contentDescription = "Echo Music",
++        contentDescription = "Bytes Music",
+         colorFilter = ColorFilter.tint(Color(0xFF00F5D4)),
+         modifier = Modifier.size(64.dp)
+       )
+diff --git a/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedShareHelper.kt b/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedShareHelper.kt
+index c20a82d..332b3c6 100644
+--- a/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedShareHelper.kt
++++ b/app/src/main/kotlin/com/music/echo/ui/screens/wrapped/WrappedShareHelper.kt
+@@ -187,7 +187,7 @@ object WrappedShareHelper {
+       color = 0x24FFFFFF.toInt()
+     }
+ 
+-    // 2. Header: Echo Music Logo + Wordmark + 2026 WRAPPED
++    // 2. Header: Bytes Music Logo + Wordmark + 2026 WRAPPED
+     try {
+       val logoDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_launcher_nobg)
+       if (logoDrawable != null) {
+@@ -208,7 +208,7 @@ object WrappedShareHelper {
+       letterSpacing = -0.04f
+       typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+     }
+-    canvas.drawText("Echo Music", marginX + 70f, 156f, wordmarkPaint)
++    canvas.drawText("Bytes Music", marginX + 70f, 156f, wordmarkPaint)
+ 
+     val yearPaint = Paint().apply {
+       isAntiAlias = true
+@@ -525,7 +525,7 @@ object WrappedShareHelper {
+         putExtra(Intent.EXTRA_STREAM, uri)
+         putExtra(
+           Intent.EXTRA_TEXT,
+-          "Here is my ${data.yearLabel} Wrapped on Echo Music! 🎵\nTop Song: ${data.topSong?.title ?: "Various"}\nTop Artist: ${data.topArtist?.title ?: "Various"}\nPersona: ${data.dominantVibe}"
++          "Here is my ${data.yearLabel} Wrapped on Bytes Music! 🎵\nTop Song: ${data.topSong?.title ?: "Various"}\nTop Artist: ${data.topArtist?.title ?: "Various"}\nPersona: ${data.dominantVibe}"
+         )
+         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+       }
+diff --git a/app/src/main/kotlin/com/music/echo/utils/DiscordRPC.kt b/app/src/main/kotlin/com/music/echo/utils/DiscordRPC.kt
+index 59a6f3e..4b4bdbf 100644
+--- a/app/src/main/kotlin/com/music/echo/utils/DiscordRPC.kt
++++ b/app/src/main/kotlin/com/music/echo/utils/DiscordRPC.kt
+@@ -275,7 +275,7 @@ class DiscordRPC(
+     val button1Label =
+       context.dataStore[DiscordActivityButton1LabelKey] ?: "Listen on YouTube Music"
+     val button1Enabled = context.dataStore[DiscordActivityButton1EnabledKey] ?: true
+-    val button2Label = context.dataStore[DiscordActivityButton2LabelKey] ?: "Go to Echo Music"
++    val button2Label = context.dataStore[DiscordActivityButton2LabelKey] ?: "Go to Bytes Music"
+     val button2Enabled = context.dataStore[DiscordActivityButton2EnabledKey] ?: true
+     val button1UrlSource = context.dataStore[DiscordActivityButton1UrlSourceKey] ?: "songurl"
+     val button1CustomUrl = context.dataStore[DiscordActivityButton1CustomUrlKey] ?: ""
+diff --git a/app/src/main/kotlin/com/music/echo/viewmodels/HomeViewModel.kt b/app/src/main/kotlin/com/music/echo/viewmodels/HomeViewModel.kt
+index e2f535d..c66325c 100644
+--- a/app/src/main/kotlin/com/music/echo/viewmodels/HomeViewModel.kt
++++ b/app/src/main/kotlin/com/music/echo/viewmodels/HomeViewModel.kt
+@@ -178,7 +178,7 @@ constructor(
+   val aiRecommendedPlaylist =
+     database
+       .playlistsByNameAsc()
+-      .map { playlists -> playlists.find { it.playlist.name == "From your taste by Echo Music" } }
++      .map { playlists -> playlists.find { it.playlist.name == "From your taste by Bytes Music" } }
+       .flatMapLatest { playlist ->
+         if (playlist != null && playlist.songCount > 0) {
+           database.playlistSongs(playlist.playlist.id).map { playlistSongs ->
+diff --git a/app/src/main/res/values-ar/strings.xml b/app/src/main/res/values-ar/strings.xml
+index 2f8c812..bc5b846 100644
+--- a/app/src/main/res/values-ar/strings.xml
++++ b/app/src/main/res/values-ar/strings.xml
+@@ -382,7 +382,7 @@
+     <string name="listen_together_smart_resync">إعادة مزامنة الشبكة الذكية</string>
+     <string name="listen_together_smart_resync_desc">مزامنة التشغيل تلقائيًا مع المضيف بعد انقطاع الاتصال</string>
+     <string name="spotify_import_title">الاستيراد من Spotify</string>
+-    <string name="spotify_import_desc">اربط Spotify واختر قوائم التشغيل، ثم انسخها إلى قوائم تشغيل Echo Music المحلية.</string>
++    <string name="spotify_import_desc">اربط Spotify واختر قوائم التشغيل، ثم انسخها إلى قوائم تشغيل Bytes Music المحلية.</string>
+     <string name="spotify_connect">ربط Spotify</string>
+     <string name="spotify_refresh">تحديث مكتبة Spotify</string>
+     <string name="spotify_select_sources">اختيار قوائم تشغيل Spotify</string>
+@@ -442,7 +442,7 @@
+     <string name="recognition_notification_processing">جارٍ التعرف…</string>
+     <string name="recognition_notification_no_match">لم يتم العثور على تطابق</string>
+     <string name="recognition_notification_failed">فشل التعرف</string>
+-    <string name="listen_on_echo_music">الاستماع على Echo Music</string>
++    <string name="listen_on_echo_music">الاستماع على Bytes Music</string>
+     <string name="qs_tile_music_recognizer">التعرف على الموسيقى</string>
+     <string name="echo_brain_beta">Echo Brain (تجريبي)</string>
+     <string name="echo_brain_enable">تفعيل Echo Brain</string>
+diff --git a/app/src/main/res/values-as/strings.xml b/app/src/main/res/values-as/strings.xml
+index 0da8c57..b3c2bfe 100644
+--- a/app/src/main/res/values-as/strings.xml
++++ b/app/src/main/res/values-as/strings.xml
+@@ -349,7 +349,7 @@
+     <string name="listen_together_smart_resync">স্মাৰ্ট নেটৱৰ্ক পুনঃসমলয়</string>
+     <string name="listen_together_smart_resync_desc">সংযোগ বিচ্ছিন্ন হোৱাৰ পিছত স্বয়ংক্ৰিয়ভাৱে হ’ষ্টৰ সৈতে মিলাওক</string>
+     <string name="spotify_import_title">Spotify-ৰ পৰা আমদানি কৰক</string>
+-    <string name="spotify_import_desc">Spotify সংযোগ কৰক, প্লেলিষ্ট বাছক আৰু সেইবোৰ স্থানীয় Echo Music প্লেলিষ্টলৈ প্ৰতিফলিত কৰক।</string>
++    <string name="spotify_import_desc">Spotify সংযোগ কৰক, প্লেলিষ্ট বাছক আৰু সেইবোৰ স্থানীয় Bytes Music প্লেলিষ্টলৈ প্ৰতিফলিত কৰক।</string>
+     <string name="spotify_connect">Spotify সংযোগ কৰক</string>
+     <string name="spotify_refresh">Spotify লাইব্ৰেৰী সতেজ কৰক</string>
+     <string name="spotify_select_sources">Spotify প্লেলিষ্টসমূহ বাছক</string>
+@@ -393,7 +393,7 @@
+     <string name="recognition_notification_processing">চিনাক্ত কৰা হৈছে…</string>
+     <string name="recognition_notification_no_match">কোনো মিল পোৱা নগ’ল</string>
+     <string name="recognition_notification_failed">চিনাক্তকৰণ বিফল হ’ল</string>
+-    <string name="listen_on_echo_music">Echo Music-ত শুনক</string>
++    <string name="listen_on_echo_music">Bytes Music-ত শুনক</string>
+     <string name="qs_tile_music_recognizer">সংগীত চিনাক্ত কৰক</string>
+     <string name="echo_brain_beta">Echo Brain (বিটা)</string>
+     <string name="echo_brain_enable">Echo Brain সক্ষম কৰক</string>
+diff --git a/app/src/main/res/values-az/strings.xml b/app/src/main/res/values-az/strings.xml
+index 262c27b..37f351b 100644
+--- a/app/src/main/res/values-az/strings.xml
++++ b/app/src/main/res/values-az/strings.xml
+@@ -383,7 +383,7 @@
+     <string name="recognition_notification_processing">Musiqi emal edilir</string>
+     <string name="recognition_notification_no_match">Uyğunluq tapılmadı</string>
+     <string name="recognition_notification_failed">Musiqini tanımaq mümkün olmadı</string>
+-    <string name="listen_on_echo_music">Echo Music-də dinlə</string>
++    <string name="listen_on_echo_music">Bytes Music-də dinlə</string>
+     <string name="qs_tile_music_recognizer">Musiqi tanıyıcı</string>
+     <string name="echo_brain_beta">Echo Brain Beta</string>
+     <string name="echo_brain_enable">Echo Brain-i aktiv et</string>
+diff --git a/app/src/main/res/values-b+sr+Latn/strings.xml b/app/src/main/res/values-b+sr+Latn/strings.xml
+index 1459693..2695469 100644
+--- a/app/src/main/res/values-b+sr+Latn/strings.xml
++++ b/app/src/main/res/values-b+sr+Latn/strings.xml
+@@ -353,7 +353,7 @@
+     <string name="listen_together_smart_resync">Pametna mrežna ponovna sinhronizacija</string>
+     <string name="listen_together_smart_resync_desc">Automatski se uskladite sa domaćinom nakon prekida veze</string>
+     <string name="spotify_import_title">Uvezi sa Spotifyja</string>
+-    <string name="spotify_import_desc">Povežite Spotify, izaberite plejliste i preslikajte ih u lokalne Echo Music plejliste.</string>
++    <string name="spotify_import_desc">Povežite Spotify, izaberite plejliste i preslikajte ih u lokalne Bytes Music plejliste.</string>
+     <string name="spotify_connect">Poveži Spotify</string>
+     <string name="spotify_refresh">Osveži Spotify biblioteku</string>
+     <string name="spotify_select_sources">Izaberite Spotify plejliste</string>
+@@ -413,7 +413,7 @@
+     <string name="recognition_notification_processing">Prepoznavanje…</string>
+     <string name="recognition_notification_no_match">Nije pronađeno podudaranje</string>
+     <string name="recognition_notification_failed">Prepoznavanje nije uspelo</string>
+-    <string name="listen_on_echo_music">Slušaj na Echo Music</string>
++    <string name="listen_on_echo_music">Slušaj na Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Prepoznaj muziku</string>
+     <string name="echo_brain_beta">Echo Brain (beta)</string>
+     <string name="echo_brain_enable">Omogući Echo Brain</string>
+diff --git a/app/src/main/res/values-be/strings.xml b/app/src/main/res/values-be/strings.xml
+index 029fffb..976de0e 100644
+--- a/app/src/main/res/values-be/strings.xml
++++ b/app/src/main/res/values-be/strings.xml
+@@ -363,7 +363,7 @@
+     <string name="listen_together_smart_resync">Разумная сеткавая перасінхранізацыя</string>
+     <string name="listen_together_smart_resync_desc">Аўтаматычна сінхранізавацца з вядучым пасля разрыву злучэння</string>
+     <string name="spotify_import_title">Імпарт са Spotify</string>
+-    <string name="spotify_import_desc">Падлучыце Spotify, выберыце плэй-лісты і скапіруйце іх у лакальныя плэй-лісты Echo Music.</string>
++    <string name="spotify_import_desc">Падлучыце Spotify, выберыце плэй-лісты і скапіруйце іх у лакальныя плэй-лісты Bytes Music.</string>
+     <string name="spotify_connect">Падлучыць Spotify</string>
+     <string name="spotify_refresh">Абнавіць бібліятэку Spotify</string>
+     <string name="spotify_select_sources">Выбраць плэй-лісты Spotify</string>
+@@ -427,7 +427,7 @@
+     <string name="recognition_notification_processing">Распазнаванне…</string>
+     <string name="recognition_notification_no_match">Супадзенняў не знойдзена</string>
+     <string name="recognition_notification_failed">Не ўдалося распазнаць</string>
+-    <string name="listen_on_echo_music">Слухаць у Echo Music</string>
++    <string name="listen_on_echo_music">Слухаць у Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Распазнаць музыку</string>
+     <string name="echo_brain_beta">Echo Brain (бэта-версія)</string>
+     <string name="echo_brain_enable">Уключыць Echo Brain</string>
+diff --git a/app/src/main/res/values-bg/strings.xml b/app/src/main/res/values-bg/strings.xml
+index 7718034..3ead15b 100644
+--- a/app/src/main/res/values-bg/strings.xml
++++ b/app/src/main/res/values-bg/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">Умна мрежова повторна синхронизация</string>
+     <string name="listen_together_smart_resync_desc">Автоматично наваксване на водещия след прекъсване на връзката</string>
+     <string name="spotify_import_title">Импортиране от Spotify</string>
+-    <string name="spotify_import_desc">Свържете Spotify, изберете плейлисти и ги огледайте в локални плейлисти на Echo Music.</string>
++    <string name="spotify_import_desc">Свържете Spotify, изберете плейлисти и ги огледайте в локални плейлисти на Bytes Music.</string>
+     <string name="spotify_connect">Свързване със Spotify</string>
+     <string name="spotify_refresh">Обновяване на библиотеката на Spotify</string>
+     <string name="spotify_select_sources">Избор на плейлисти от Spotify</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Разпознаване…</string>
+     <string name="recognition_notification_no_match">Не е намерено съвпадение</string>
+     <string name="recognition_notification_failed">Разпознаването е неуспешно</string>
+-    <string name="listen_on_echo_music">Слушане в Echo Music</string>
++    <string name="listen_on_echo_music">Слушане в Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Разпознаване на музика</string>
+     <string name="echo_brain_beta">Echo Brain (бета)</string>
+     <string name="echo_brain_enable">Активиране на Echo Brain</string>
+diff --git a/app/src/main/res/values-bn-rIN/strings.xml b/app/src/main/res/values-bn-rIN/strings.xml
+index 67ba5e7..36006f9 100644
+--- a/app/src/main/res/values-bn-rIN/strings.xml
++++ b/app/src/main/res/values-bn-rIN/strings.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <!--
+-  Bengali (বাংলা) Localization for Echo Music
++  Bengali (বাংলা) Localization for Bytes Music
+   Complete 100% Coverage: 825 Strings & 14 Plurals
+   Fully compliant with bangla-localization standards
+ -->
+@@ -395,7 +395,7 @@
+     <string name="listen_together_smart_resync">স্মার্ট নেটওয়ার্ক পুনঃসিঙ্ক</string>
+     <string name="listen_together_smart_resync_desc">সংযোগ বিচ্ছিন্ন হওয়ার পর স্বয়ংক্রিয়ভাবে হোস্টের সঙ্গে সিঙ্ক করুন</string>
+     <string name="spotify_import_title">Spotify থেকে আমদানি করুন</string>
+-    <string name="spotify_import_desc">Spotify সংযুক্ত করুন, প্লেলিস্ট বেছে নিন এবং সেগুলো স্থানীয় Echo Music প্লেলিস্টে প্রতিলিপি করুন।</string>
++    <string name="spotify_import_desc">Spotify সংযুক্ত করুন, প্লেলিস্ট বেছে নিন এবং সেগুলো স্থানীয় Bytes Music প্লেলিস্টে প্রতিলিপি করুন।</string>
+     <string name="spotify_connect">Spotify সংযুক্ত করুন</string>
+     <string name="spotify_refresh">Spotify লাইব্রেরি রিফ্রেশ করুন</string>
+     <string name="spotify_select_sources">Spotify প্লেলিস্ট বেছে নিন</string>
+@@ -439,7 +439,7 @@
+     <string name="recognition_notification_processing">শনাক্ত করা হচ্ছে…</string>
+     <string name="recognition_notification_no_match">কোনো মিল পাওয়া যায়নি</string>
+     <string name="recognition_notification_failed">শনাক্তকরণ ব্যর্থ হয়েছে</string>
+-    <string name="listen_on_echo_music">Echo Music-এ শুনুন</string>
++    <string name="listen_on_echo_music">Bytes Music-এ শুনুন</string>
+     <string name="qs_tile_music_recognizer">সঙ্গীত শনাক্ত করুন</string>
+     <string name="listenbrainz_scrobbling">ListenBrainz স্ক্রবলিং</string>
+     <string name="listenbrainz_scrobbling_description">আপনার শোনা ট্র্যাকগুলো স্বয়ংক্রিয়ভাবে ListenBrainz-এ জমা দিন</string>
+diff --git a/app/src/main/res/values-bn/strings.xml b/app/src/main/res/values-bn/strings.xml
+index 67ba5e7..36006f9 100644
+--- a/app/src/main/res/values-bn/strings.xml
++++ b/app/src/main/res/values-bn/strings.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <!--
+-  Bengali (বাংলা) Localization for Echo Music
++  Bengali (বাংলা) Localization for Bytes Music
+   Complete 100% Coverage: 825 Strings & 14 Plurals
+   Fully compliant with bangla-localization standards
+ -->
+@@ -395,7 +395,7 @@
+     <string name="listen_together_smart_resync">স্মার্ট নেটওয়ার্ক পুনঃসিঙ্ক</string>
+     <string name="listen_together_smart_resync_desc">সংযোগ বিচ্ছিন্ন হওয়ার পর স্বয়ংক্রিয়ভাবে হোস্টের সঙ্গে সিঙ্ক করুন</string>
+     <string name="spotify_import_title">Spotify থেকে আমদানি করুন</string>
+-    <string name="spotify_import_desc">Spotify সংযুক্ত করুন, প্লেলিস্ট বেছে নিন এবং সেগুলো স্থানীয় Echo Music প্লেলিস্টে প্রতিলিপি করুন।</string>
++    <string name="spotify_import_desc">Spotify সংযুক্ত করুন, প্লেলিস্ট বেছে নিন এবং সেগুলো স্থানীয় Bytes Music প্লেলিস্টে প্রতিলিপি করুন।</string>
+     <string name="spotify_connect">Spotify সংযুক্ত করুন</string>
+     <string name="spotify_refresh">Spotify লাইব্রেরি রিফ্রেশ করুন</string>
+     <string name="spotify_select_sources">Spotify প্লেলিস্ট বেছে নিন</string>
+@@ -439,7 +439,7 @@
+     <string name="recognition_notification_processing">শনাক্ত করা হচ্ছে…</string>
+     <string name="recognition_notification_no_match">কোনো মিল পাওয়া যায়নি</string>
+     <string name="recognition_notification_failed">শনাক্তকরণ ব্যর্থ হয়েছে</string>
+-    <string name="listen_on_echo_music">Echo Music-এ শুনুন</string>
++    <string name="listen_on_echo_music">Bytes Music-এ শুনুন</string>
+     <string name="qs_tile_music_recognizer">সঙ্গীত শনাক্ত করুন</string>
+     <string name="listenbrainz_scrobbling">ListenBrainz স্ক্রবলিং</string>
+     <string name="listenbrainz_scrobbling_description">আপনার শোনা ট্র্যাকগুলো স্বয়ংক্রিয়ভাবে ListenBrainz-এ জমা দিন</string>
+diff --git a/app/src/main/res/values-bs/strings.xml b/app/src/main/res/values-bs/strings.xml
+index d34e75e..97fd72a 100644
+--- a/app/src/main/res/values-bs/strings.xml
++++ b/app/src/main/res/values-bs/strings.xml
+@@ -352,7 +352,7 @@
+     <string name="listen_together_smart_resync">Pametna mrežna ponovna sinhronizacija</string>
+     <string name="listen_together_smart_resync_desc">Automatski se uskladite s domaćinom nakon prekida veze</string>
+     <string name="spotify_import_title">Uvezi sa Spotifyja</string>
+-    <string name="spotify_import_desc">Povežite Spotify, odaberite spiskove i preslikajte ih u lokalne Echo Music spiskove.</string>
++    <string name="spotify_import_desc">Povežite Spotify, odaberite spiskove i preslikajte ih u lokalne Bytes Music spiskove.</string>
+     <string name="spotify_connect">Poveži Spotify</string>
+     <string name="spotify_refresh">Osvježi Spotify biblioteku</string>
+     <string name="spotify_select_sources">Odaberite Spotify spiskove</string>
+@@ -413,7 +413,7 @@
+     <string name="other_services">Ostale usluge</string>
+     <string name="status_online">Na mreži</string>
+     <string name="status_offline">Van mreže</string>
+-    <string name="listen_on_echo_music">Slušajte na Echo Music</string>
++    <string name="listen_on_echo_music">Slušajte na Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Prepoznaj muziku</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Omogući Echo Brain</string>
+diff --git a/app/src/main/res/values-ca/strings.xml b/app/src/main/res/values-ca/strings.xml
+index a58911f..6639723 100644
+--- a/app/src/main/res/values-ca/strings.xml
++++ b/app/src/main/res/values-ca/strings.xml
+@@ -351,7 +351,7 @@
+     <string name="listen_together_smart_resync">Resincronització intel·ligent de xarxa</string>
+     <string name="listen_together_smart_resync_desc">Posi’s al dia automàticament amb l’amfitrió després d’una caiguda de la connexió</string>
+     <string name="spotify_import_title">Importa des de Spotify</string>
+-    <string name="spotify_import_desc">Connecteu Spotify, trieu llistes de reproducció i copieu-les a les llistes locals d’Echo Music.</string>
++    <string name="spotify_import_desc">Connecteu Spotify, trieu llistes de reproducció i copieu-les a les llistes locals d’Bytes Music.</string>
+     <string name="spotify_connect">Connecta Spotify</string>
+     <string name="spotify_refresh">Actualitza la col·lecció de Spotify</string>
+     <string name="spotify_select_sources">Selecciona les llistes de Spotify</string>
+@@ -412,7 +412,7 @@
+     <string name="recognition_notification_processing">S\'està identificant…</string>
+     <string name="recognition_notification_no_match">No s\'ha trobat cap coincidència</string>
+     <string name="recognition_notification_failed">Ha fallat el reconeixement</string>
+-    <string name="listen_on_echo_music">Escolta-ho a Echo Music</string>
++    <string name="listen_on_echo_music">Escolta-ho a Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Reconeix música</string>
+     <string name="echo_brain_beta">Echo Brain (beta)</string>
+     <string name="echo_brain_enable">Activa Echo Brain</string>
+diff --git a/app/src/main/res/values-cs/strings.xml b/app/src/main/res/values-cs/strings.xml
+index 23fbf49..ce174e3 100644
+--- a/app/src/main/res/values-cs/strings.xml
++++ b/app/src/main/res/values-cs/strings.xml
+@@ -352,7 +352,7 @@
+     <string name="listen_together_smart_resync">Chytrá resynchronizace sítě</string>
+     <string name="listen_together_smart_resync_desc">Automaticky se přizpůsobte hostiteli po výpadku připojení</string>
+     <string name="spotify_import_title">Importovat ze Spotify</string>
+-    <string name="spotify_import_desc">Připojte Spotify, vyberte playlisty a zrcadlete je do místních playlistů Echo Music.</string>
++    <string name="spotify_import_desc">Připojte Spotify, vyberte playlisty a zrcadlete je do místních playlistů Bytes Music.</string>
+     <string name="spotify_connect">Připojit Spotify</string>
+     <string name="spotify_refresh">Obnovit knihovnu Spotify</string>
+     <string name="spotify_select_sources">Vybrat playlisty Spotify</string>
+@@ -412,7 +412,7 @@
+     <string name="recognition_notification_processing">Rozpoznávání…</string>
+     <string name="recognition_notification_no_match">Nebyla nalezena žádná shoda</string>
+     <string name="recognition_notification_failed">Rozpoznávání se nezdařilo</string>
+-    <string name="listen_on_echo_music">Poslechnout v Echo Music</string>
++    <string name="listen_on_echo_music">Poslechnout v Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Rozpoznat hudbu</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Povolit Echo Brain</string>
+diff --git a/app/src/main/res/values-de/strings.xml b/app/src/main/res/values-de/strings.xml
+index 659083e..29fb73a 100644
+--- a/app/src/main/res/values-de/strings.xml
++++ b/app/src/main/res/values-de/strings.xml
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Wird erkannt…</string>
+     <string name="recognition_notification_no_match">Keine Übereinstimmung gefunden</string>
+     <string name="recognition_notification_failed">Erkennung fehlgeschlagen</string>
+-    <string name="listen_on_echo_music">Auf Echo Music anhören</string>
++    <string name="listen_on_echo_music">Auf Bytes Music anhören</string>
+     <string name="qs_tile_music_recognizer">Musik erkennen</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Echo Brain aktivieren</string>
+diff --git a/app/src/main/res/values-el/strings.xml b/app/src/main/res/values-el/strings.xml
+index a6c876e..1482159 100644
+--- a/app/src/main/res/values-el/strings.xml
++++ b/app/src/main/res/values-el/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">Έξυπνος επανασυγχρονισμός δικτύου</string>
+     <string name="listen_together_smart_resync_desc">Αυτόματος συγχρονισμός με τον οικοδεσπότη μετά από διακοπή σύνδεσης</string>
+     <string name="spotify_import_title">Εισαγωγή από το Spotify</string>
+-    <string name="spotify_import_desc">Συνδέστε το Spotify, επιλέξτε λίστες αναπαραγωγής και αντιγράψτε τις σε τοπικές λίστες αναπαραγωγής του Echo Music.</string>
++    <string name="spotify_import_desc">Συνδέστε το Spotify, επιλέξτε λίστες αναπαραγωγής και αντιγράψτε τις σε τοπικές λίστες αναπαραγωγής του Bytes Music.</string>
+     <string name="spotify_connect">Σύνδεση Spotify</string>
+     <string name="spotify_refresh">Ανανέωση βιβλιοθήκης Spotify</string>
+     <string name="spotify_select_sources">Επιλογή λιστών αναπαραγωγής Spotify</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Αναγνώριση…</string>
+     <string name="recognition_notification_no_match">Δεν βρέθηκε αντιστοιχία</string>
+     <string name="recognition_notification_failed">Η αναγνώριση απέτυχε</string>
+-    <string name="listen_on_echo_music">Ακρόαση στο Echo Music</string>
++    <string name="listen_on_echo_music">Ακρόαση στο Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Αναγνώριση μουσικής</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Ενεργοποίηση Echo Brain</string>
+diff --git a/app/src/main/res/values-en-rCA/strings.xml b/app/src/main/res/values-en-rCA/strings.xml
+index 77400f4..bc53c7c 100644
+--- a/app/src/main/res/values-en-rCA/strings.xml
++++ b/app/src/main/res/values-en-rCA/strings.xml
+@@ -328,7 +328,7 @@
+     <string name="backup_create_failed">Couldn\'t create backup</string>
+     <string name="restore_failed">Failed to restore backup</string>
+     <string name="discord_integration">Discord Integration</string>
+-    <string name="discord_information">Echo Music uses the KizzyRPC library to set your Discord account\'s status. This involves using the Discord Gateway connection, which may be considered a violation of Discord\'s Terms of Service. However, there are no known cases of user accounts being suspended for this reason. Use at your own risk.\n\nEcho Music will only extract your token. Everything else is stored locally.</string>
++    <string name="discord_information">Bytes Music uses the KizzyRPC library to set your Discord account\'s status. This involves using the Discord Gateway connection, which may be considered a violation of Discord\'s Terms of Service. However, there are no known cases of user accounts being suspended for this reason. Use at your own risk.\n\nBytes Music will only extract your token. Everything else is stored locally.</string>
+     <string name="dismiss">Dismiss</string>
+     <string name="options">Options</string>
+     <string name="preview">Preview</string>
+@@ -354,7 +354,7 @@
+     <string name="listen_together_smart_resync">Smart Network Resync</string>
+     <string name="listen_together_smart_resync_desc">Automatically catch up with the host after a connection drop</string>
+     <string name="spotify_import_title">Import from Spotify</string>
+-    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them to local Echo Music playlists.</string>
++    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them to local Bytes Music playlists.</string>
+     <string name="spotify_connect">Connect Spotify</string>
+     <string name="spotify_refresh">Refresh Spotify library</string>
+     <string name="spotify_select_sources">Select Spotify playlists</string>
+@@ -414,7 +414,7 @@
+     <string name="recognition_notification_processing">Identifying…</string>
+     <string name="recognition_notification_no_match">No match found</string>
+     <string name="recognition_notification_failed">Recognition failed</string>
+-    <string name="listen_on_echo_music">Listen on Echo Music</string>
++    <string name="listen_on_echo_music">Listen on Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Recognize music</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Enable Echo Brain</string>
+diff --git a/app/src/main/res/values-es-rUS/strings.xml b/app/src/main/res/values-es-rUS/strings.xml
+index f749d41..3069dfe 100644
+--- a/app/src/main/res/values-es-rUS/strings.xml
++++ b/app/src/main/res/values-es-rUS/strings.xml
+@@ -352,7 +352,7 @@
+     <string name="listen_together_smart_resync">Resincronización inteligente de red</string>
+     <string name="listen_together_smart_resync_desc">Ponte al día automáticamente con el anfitrión después de una caída de la conexión</string>
+     <string name="spotify_import_title">Importar desde Spotify</string>
+-    <string name="spotify_import_desc">Conecta Spotify, elige listas de reproducción y reprodúcelas en listas locales de Echo Music.</string>
++    <string name="spotify_import_desc">Conecta Spotify, elige listas de reproducción y reprodúcelas en listas locales de Bytes Music.</string>
+     <string name="spotify_connect">Conectar Spotify</string>
+     <string name="spotify_refresh">Actualizar biblioteca de Spotify</string>
+     <string name="spotify_select_sources">Seleccionar listas de Spotify</string>
+@@ -412,7 +412,7 @@
+     <string name="recognition_notification_processing">Identificando…</string>
+     <string name="recognition_notification_no_match">No se encontraron coincidencias</string>
+     <string name="recognition_notification_failed">Falló el reconocimiento</string>
+-    <string name="listen_on_echo_music">Escuchar en Echo Music</string>
++    <string name="listen_on_echo_music">Escuchar en Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Reconocer música</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Activar Echo Brain</string>
+diff --git a/app/src/main/res/values-es/echo_strings.xml b/app/src/main/res/values-es/echo_strings.xml
+index 417e6bd..1363c4a 100644
+--- a/app/src/main/res/values-es/echo_strings.xml
++++ b/app/src/main/res/values-es/echo_strings.xml
+@@ -624,7 +624,7 @@
+     <string name="playback_progress">Progreso de reproducción</string>
+     <string name="widget_playing_on">Reproduciendo en</string>
+     <string name="widget_this_phone">Este teléfono</string>
+-    <string name="widget_echo_music">Echo Music</string>
++    <string name="widget_echo_music">Bytes Music</string>
+     <string name="widget_queue">Cola</string>
+     <string name="widget_cast">Transmitir</string>
+     <string name="widget_options">Más opciones</string>
+@@ -745,7 +745,7 @@
+     <string name="ai_lyrics_translation">Centro de IA (AI Hub)</string>
+     <string name="contribute_to_lossless">Contribuir a música Lossless</string>
+     <string name="lossless_music_hub">Centro de música Lossless</string>
+-    <string name="lossless_desc">Añade audio .flac sin pérdida de alta fidelidad al ecosistema de Echo Music. Tamaño máximo: 99 MB.</string>
++    <string name="lossless_desc">Añade audio .flac sin pérdida de alta fidelidad al ecosistema de Bytes Music. Tamaño máximo: 99 MB.</string>
+     <string name="login_with_github">Iniciar sesión con GitHub</string>
+     <string name="lossless_audio_file">Archivo de audio Lossless</string>
+     <string name="choose_file">Elegir archivo .flac (Máx. 99 MB)</string>
+@@ -859,7 +859,7 @@
+     <string name="delete_from_history">Eliminar del historial</string>
+     <string name="re_listen">Volver a escuchar</string>
+     <string name="hold_to_recognize">Mantén pulsado el icono de búsqueda para identificar música</string>
+-    <string name="play_on_app">Reproducir en Echo Music</string>
++    <string name="play_on_app">Reproducir en Bytes Music</string>
+     <string name="recognized_track">Pista identificada</string>
+ 
+     <!-- CSV Import Strings -->
+diff --git a/app/src/main/res/values-es/strings.xml b/app/src/main/res/values-es/strings.xml
+index 2aad30c..4467a92 100644
+--- a/app/src/main/res/values-es/strings.xml
++++ b/app/src/main/res/values-es/strings.xml
+@@ -465,7 +465,7 @@
+     <string name="listen_together_smart_resync">Resincronización de red inteligente</string>
+     <string name="listen_together_smart_resync_desc">Sincroniza de nuevo con el anfitrión automáticamente tras un corte de conexión</string>
+     <string name="spotify_import_title">Importar desde Spotify</string>
+-    <string name="spotify_import_desc">Conecta Spotify, elige tus listas de reproducción y refléjalas en listas locales de Echo Music.</string>
++    <string name="spotify_import_desc">Conecta Spotify, elige tus listas de reproducción y refléjalas en listas locales de Bytes Music.</string>
+     <string name="spotify_connect">Conectar Spotify</string>
+     <string name="spotify_refresh">Actualizar biblioteca de Spotify</string>
+     <string name="spotify_select_sources">Seleccionar listas de Spotify</string>
+@@ -518,7 +518,7 @@
+     <string name="recognition_notification_processing">Identificando…</string>
+     <string name="recognition_notification_no_match">No se encontraron coincidencias</string>
+     <string name="recognition_notification_failed">Error en el reconocimiento</string>
+-    <string name="listen_on_echo_music">Escuchar en Echo Music</string>
++    <string name="listen_on_echo_music">Escuchar en Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Reconocer música</string>
+     <string name="listenbrainz_scrobbling">Scrobbling en ListenBrainz</string>
+     <string name="listenbrainz_scrobbling_description">Envía automáticamente las pistas que escuchas a ListenBrainz</string>
+diff --git a/app/src/main/res/values-es/updater_strings.xml b/app/src/main/res/values-es/updater_strings.xml
+index 21e1433..60066fc 100644
+--- a/app/src/main/res/values-es/updater_strings.xml
++++ b/app/src/main/res/values-es/updater_strings.xml
+@@ -20,7 +20,7 @@
+     <string name="installing_system_update">Instalando actualización\ndel sistema…</string>
+     <string name="making_update_ready">Preparando la actualización, esto puede tardar un momento</string>
+     <string name="your_app_getting_better">Tu aplicación está mejorando aún más…</string>
+-    <string name="update_includes_features">Esta actualización incluye nuevas funciones y lo último de Echo Music %1$s para mejorar tu experiencia. Más información en %2$s.</string>
++    <string name="update_includes_features">Esta actualización incluye nuevas funciones y lo último de Bytes Music %1$s para mejorar tu experiencia. Más información en %2$s.</string>
+     <string name="whats_new">¿Qué hay de nuevo?</string>
+     <string name="update_available">Actualizar</string>
+     <string name="checking_for_updates">Buscando actualizaciones…</string>
+@@ -35,7 +35,7 @@
+     <string name="mobile_network_warning">Descargar actualizaciones mediante datos móviles o en roaming puede generar cargos adicionales.</string>
+     <string name="update_size">Tamaño de la actualización: %1$s MB</string>
+     <string name="check_internet_connection">Comprueba tu conexión a internet e inténtalo de nuevo.</string>
+-    <string name="echo_music_version">Echo Music versión %1$s</string>
++    <string name="echo_music_version">Bytes Music versión %1$s</string>
+     <string name="last_checked">Última comprobación: %1$s</string>
+     <string name="install">Instalar</string>
+     <string name="check_for_update">Buscar actualización</string>
+@@ -52,7 +52,7 @@
+     <string name="later">Más tarde</string>
+ 
+ 
+-    <string name="echo_music_title">Echo Music</string>
++    <string name="echo_music_title">Bytes Music</string>
+     <string name="developer_section">DESARROLLADOR</string>
+     <string name="collaborator_section">COLABORADOR</string>
+     <string name="app_info_section">INFORMACIÓN DE LA APP</string>
+diff --git a/app/src/main/res/values-et/strings.xml b/app/src/main/res/values-et/strings.xml
+index f81ff04..a90041b 100644
+--- a/app/src/main/res/values-et/strings.xml
++++ b/app/src/main/res/values-et/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">Nutikas võrgu uuesti sünkroonimine</string>
+     <string name="listen_together_smart_resync_desc">Pärast ühenduse katkemist saavuta automaatselt uuesti hostiga kooskõla</string>
+     <string name="spotify_import_title">Impordi Spotify-st</string>
+-    <string name="spotify_import_desc">Ühenda Spotify, vali esitusloendid ja peegelda need kohalikesse Echo Music esitusloenditesse.</string>
++    <string name="spotify_import_desc">Ühenda Spotify, vali esitusloendid ja peegelda need kohalikesse Bytes Music esitusloenditesse.</string>
+     <string name="spotify_connect">Ühenda Spotify</string>
+     <string name="spotify_refresh">Värskenda Spotify muusikakogu</string>
+     <string name="spotify_select_sources">Vali Spotify esitusloendid</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Tuvastamine…</string>
+     <string name="recognition_notification_no_match">Vastet ei leitud</string>
+     <string name="recognition_notification_failed">Tuvastamine ebaõnnestus</string>
+-    <string name="listen_on_echo_music">Kuula Echo Musicus</string>
++    <string name="listen_on_echo_music">Kuula Bytes Musicus</string>
+     <string name="qs_tile_music_recognizer">Tuvasta muusika</string>
+     <string name="echo_brain_beta">Echo Brain (beeta)</string>
+     <string name="echo_brain_enable">Luba Echo Brain</string>
+diff --git a/app/src/main/res/values-eu/strings.xml b/app/src/main/res/values-eu/strings.xml
+index 0ffd6b0..1bf58a4 100644
+--- a/app/src/main/res/values-eu/strings.xml
++++ b/app/src/main/res/values-eu/strings.xml
+@@ -349,7 +349,7 @@
+     <string name="listen_together_smart_resync">Sareko birsinkronizazio adimenduna</string>
+     <string name="listen_together_smart_resync_desc">Sinkronizatu automatikoki ostalariarekin konexioa eten ondoren</string>
+     <string name="spotify_import_title">Inportatu Spotify-tik</string>
+-    <string name="spotify_import_desc">Konektatu Spotify, aukeratu erreprodukzio-zerrendak eta kopiatu Echo Music-eko tokiko erreprodukzio-zerrendetara.</string>
++    <string name="spotify_import_desc">Konektatu Spotify, aukeratu erreprodukzio-zerrendak eta kopiatu Bytes Music-eko tokiko erreprodukzio-zerrendetara.</string>
+     <string name="spotify_connect">Konektatu Spotify</string>
+     <string name="spotify_refresh">Freskatu Spotify liburutegia</string>
+     <string name="spotify_select_sources">Hautatu Spotify erreprodukzio-zerrendak</string>
+@@ -393,7 +393,7 @@
+     <string name="recognition_notification_processing">Identifikatzen…</string>
+     <string name="recognition_notification_no_match">Ez da bat datorrenik aurkitu</string>
+     <string name="recognition_notification_failed">Ezin izan da ezagutu</string>
+-    <string name="listen_on_echo_music">Entzun Echo Music-en</string>
++    <string name="listen_on_echo_music">Entzun Bytes Music-en</string>
+     <string name="qs_tile_music_recognizer">Ezagutu musika</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Gaitu Echo Brain</string>
+diff --git a/app/src/main/res/values-fa/echo_strings.xml b/app/src/main/res/values-fa/echo_strings.xml
+index ec4796c..befac9c 100644
+--- a/app/src/main/res/values-fa/echo_strings.xml
++++ b/app/src/main/res/values-fa/echo_strings.xml
+@@ -425,7 +425,7 @@
+     <string name="karaoke">کارائوکه</string>
+     <string name="apple_music_style">اپل موزیک</string>
+     <string name="apple_music_style_letter">اپل موزیک نسخه ۲ (حرف به حرف)</string>
+-    <string name="echomusic_1">Echo Music (روان)</string>
++    <string name="echomusic_1">Bytes Music (روان)</string>
+     <string name="apple_music_lyrics_blur">تاری متن به سبک اپل موزیک</string>
+     <string name="apple_music_lyrics_blur_desc">اعمال افکت تاری روی خطوط غیرفعال متن برای تمرکز عالی روی لاین در حال پخش</string>
+     <string name="lyrics_v2_fluid">متن آهنگ نسخه ۲ (روان)</string>
+@@ -780,7 +780,7 @@
+     <string name="delete_from_history">حذف از تاریخچه</string>
+     <string name="re_listen">گوش دادن مجدد</string>
+     <string name="hold_to_recognize">برای تشخیص موسیقی، آیکون جستجو را نگه دارید</string>
+-    <string name="play_on_app">پخش در Echo Music</string>
++    <string name="play_on_app">پخش در Bytes Music</string>
+     <string name="recognized_track">آهنگ شناسایی شده</string>
+ 
+     <!-- CSV Import Strings -->
+diff --git a/app/src/main/res/values-fa/strings.xml b/app/src/main/res/values-fa/strings.xml
+index 813b4da..dd75715 100644
+--- a/app/src/main/res/values-fa/strings.xml
++++ b/app/src/main/res/values-fa/strings.xml
+@@ -354,7 +354,7 @@
+     <string name="listen_together_smart_resync">همگام‌سازی هوشمند شبکه</string>
+     <string name="listen_together_smart_resync_desc">همگام‌سازی و رساندن خودکار پخش به پخش‌کننده اصلی پس از قطع و وصل شدن اتصال</string>
+     <string name="spotify_import_title">وارد کردن از اسپاتیفای</string>
+-    <string name="spotify_import_desc">اتصال به اسپاتیفای، انتخاب لیست‌های پخش و شبیه‌سازی آن‌ها در لیست‌های پخش محلی Echo Music.</string>
++    <string name="spotify_import_desc">اتصال به اسپاتیفای، انتخاب لیست‌های پخش و شبیه‌سازی آن‌ها در لیست‌های پخش محلی Bytes Music.</string>
+     <string name="spotify_connect">اتصال به اسپاتیفای</string>
+     <string name="spotify_refresh">بروزرسانی کتابخانه اسپاتیفای</string>
+     <string name="spotify_select_sources">انتخاب لیست‌های پخش اسپاتیفای</string>
+@@ -415,7 +415,7 @@
+     <string name="recognition_notification_processing">در حال شناسایی…</string>
+     <string name="recognition_notification_no_match">هیچ مورد منطبقی یافت نشد</string>
+     <string name="recognition_notification_failed">تشخیص ناموفق بود</string>
+-    <string name="listen_on_echo_music">در Echo Music گوش دهید</string>
++    <string name="listen_on_echo_music">در Bytes Music گوش دهید</string>
+     <string name="qs_tile_music_recognizer">تشخیص موسیقی</string>
+     <string name="echo_brain_beta">Echo Brain (بتا)</string>
+     <string name="echo_brain_enable">فعال‌سازی Echo Brain</string>
+diff --git a/app/src/main/res/values-fa/updater_strings.xml b/app/src/main/res/values-fa/updater_strings.xml
+index b80b709..4a09be9 100644
+--- a/app/src/main/res/values-fa/updater_strings.xml
++++ b/app/src/main/res/values-fa/updater_strings.xml
+@@ -20,7 +20,7 @@
+     <string name="installing_system_update">در حال نصب به‌روزرسانی\nسیستم…</string>
+     <string name="making_update_ready">در حال آماده‌سازی به‌روزرسانی، این فرآیند ممکن است کمی زمان ببرد</string>
+     <string name="your_app_getting_better">برنامه شما دارد بهتر و کامل‌تر می‌شود…</string>
+-    <string name="update_includes_features">این به‌روزرسانی شامل ویژگی‌های جدید و آخرین تغییرات Echo Music %1$s است که برنامه را کارآمدتر می‌کند. اطلاعات بیشتر در %2$s.</string>
++    <string name="update_includes_features">این به‌روزرسانی شامل ویژگی‌های جدید و آخرین تغییرات Bytes Music %1$s است که برنامه را کارآمدتر می‌کند. اطلاعات بیشتر در %2$s.</string>
+     <string name="whats_new">چه چیزهایی جدید است؟</string>
+     <string name="update_available">به‌روزرسانی</string>
+     <string name="checking_for_updates">در حال بررسی برای به‌روزرسانی…</string>
+@@ -53,7 +53,7 @@
+     <string name="later">بعداً</string>
+ 
+ 
+-    <string name="echo_music_title">Echo Music</string>
++    <string name="echo_music_title">Bytes Music</string>
+     <string name="developer_section">توسعه‌دهنده</string>
+     <string name="collaborator_section">همکاران</string>
+     <string name="app_info_section">اطلاعات برنامه</string>
+diff --git a/app/src/main/res/values-fi/strings.xml b/app/src/main/res/values-fi/strings.xml
+index 110f8fa..082dc99 100644
+--- a/app/src/main/res/values-fi/strings.xml
++++ b/app/src/main/res/values-fi/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">Älykäs verkon uudelleensynkronointi</string>
+     <string name="listen_together_smart_resync_desc">Tavoita isäntä automaattisesti yhteyden katkeamisen jälkeen</string>
+     <string name="spotify_import_title">Tuo Spotifysta</string>
+-    <string name="spotify_import_desc">Yhdistä Spotify, valitse soittolistat ja peilaa ne paikallisiksi Echo Music-soittolistoiksi.</string>
++    <string name="spotify_import_desc">Yhdistä Spotify, valitse soittolistat ja peilaa ne paikallisiksi Bytes Music-soittolistoiksi.</string>
+     <string name="spotify_connect">Yhdistä Spotify</string>
+     <string name="spotify_refresh">Päivitä Spotify-kirjasto</string>
+     <string name="spotify_select_sources">Valitse Spotify-soittolistat</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Tunnistetaan…</string>
+     <string name="recognition_notification_no_match">Vastaavuutta ei löytynyt</string>
+     <string name="recognition_notification_failed">Tunnistus epäonnistui</string>
+-    <string name="listen_on_echo_music">Kuuntele Echo Musicissa</string>
++    <string name="listen_on_echo_music">Kuuntele Bytes Musicissa</string>
+     <string name="qs_tile_music_recognizer">Tunnista musiikki</string>
+     <string name="echo_brain_beta">Echo Brain (beeta)</string>
+     <string name="echo_brain_enable">Ota Echo Brain käyttöön</string>
+diff --git a/app/src/main/res/values-fil/strings.xml b/app/src/main/res/values-fil/strings.xml
+index 86f11b3..5f41c38 100644
+--- a/app/src/main/res/values-fil/strings.xml
++++ b/app/src/main/res/values-fil/strings.xml
+@@ -355,7 +355,7 @@
+     <string name="listen_together_smart_resync">Smart Network Resync</string>
+     <string name="listen_together_smart_resync_desc">Awtomatikong humabol sa host pagkatapos ng pagkawala ng koneksyon</string>
+     <string name="spotify_import_title">Mag-import Mula sa Spotify</string>
+-    <string name="spotify_import_desc">Ikonekta ang Spotify, pumili ng mga playlist, at i-mirror ang mga ito sa mga lokal na Echo Music playlist.</string>
++    <string name="spotify_import_desc">Ikonekta ang Spotify, pumili ng mga playlist, at i-mirror ang mga ito sa mga lokal na Bytes Music playlist.</string>
+     <string name="spotify_connect">Ikonekta ang Spotify</string>
+     <string name="spotify_refresh">I-refresh ang Spotify library</string>
+     <string name="spotify_select_sources">Pumili ng mga Spotify playlist</string>
+@@ -415,7 +415,7 @@
+     <string name="recognition_notification_processing">Kinikilala…</string>
+     <string name="recognition_notification_no_match">Walang nakitang katugma</string>
+     <string name="recognition_notification_failed">Nabigo ang pagkilala</string>
+-    <string name="listen_on_echo_music">Pakinggan sa Echo Music</string>
++    <string name="listen_on_echo_music">Pakinggan sa Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Kilalanin ang musika</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Paganahin ang Echo Brain</string>
+diff --git a/app/src/main/res/values-fr/echo_strings.xml b/app/src/main/res/values-fr/echo_strings.xml
+index 5774b0c..7b5e6c4 100644
+--- a/app/src/main/res/values-fr/echo_strings.xml
++++ b/app/src/main/res/values-fr/echo_strings.xml
+@@ -624,7 +624,7 @@
+     <string name="playback_progress">Progression de la lecture</string>
+     <string name="widget_playing_on">Lecture sur</string>
+     <string name="widget_this_phone">Ce téléphone</string>
+-    <string name="widget_echo_music">Echo Music</string>
++    <string name="widget_echo_music">Bytes Music</string>
+     <string name="widget_queue">File d\'attente</string>
+     <string name="widget_cast">Caster</string>
+     <string name="widget_options">Plus d\'options</string>
+@@ -738,7 +738,7 @@
+     <string name="ai_lyrics_translation">Espace IA (AI Hub)</string>
+     <string name="contribute_to_lossless">Contribuer à Lossless Music</string>
+     <string name="lossless_music_hub">Hub Musique Lossless</string>
+-    <string name="lossless_desc">Ajoutez de l\'audio haute fidélité sans perte (.flac) à l\'écosystème Echo Music. Taille max : 99 Mo.</string>
++    <string name="lossless_desc">Ajoutez de l\'audio haute fidélité sans perte (.flac) à l\'écosystème Bytes Music. Taille max : 99 Mo.</string>
+     <string name="login_with_github">Se connecter avec GitHub</string>
+     <string name="lossless_audio_file">Fichier audio Lossless</string>
+     <string name="choose_file">Choisir un fichier .flac (Max 99 Mo)</string>
+@@ -852,7 +852,7 @@
+     <string name="delete_from_history">Supprimer de l\'historique</string>
+     <string name="re_listen">Réécouter</string>
+     <string name="hold_to_recognize">Maintenir l\'icône de recherche appuyée pour reconnaître de la musique</string>
+-    <string name="play_on_app">Lire sur Echo Music</string>
++    <string name="play_on_app">Lire sur Bytes Music</string>
+     <string name="recognized_track">Morceau reconnu</string>
+ 
+     <!-- Importation CSV -->
+diff --git a/app/src/main/res/values-fr/strings.xml b/app/src/main/res/values-fr/strings.xml
+index 57e7a9c..e5ae16b 100644
+--- a/app/src/main/res/values-fr/strings.xml
++++ b/app/src/main/res/values-fr/strings.xml
+@@ -464,7 +464,7 @@
+     <string name="listen_together_smart_resync">Resynchronisation réseau intelligente</string>
+     <string name="listen_together_smart_resync_desc">Rattraper automatiquement la lecture de l\'hôte après une perte de connexion</string>
+     <string name="spotify_import_title">Importer depuis Spotify</string>
+-    <string name="spotify_import_desc">Connectez Spotify, choisissez des playlists et dupliquez-les dans vos playlists locales Echo Music.</string>
++    <string name="spotify_import_desc">Connectez Spotify, choisissez des playlists et dupliquez-les dans vos playlists locales Bytes Music.</string>
+     <string name="spotify_connect">Connecter Spotify</string>
+     <string name="spotify_refresh">Actualiser la bibliothèque Spotify</string>
+     <string name="spotify_select_sources">Sélectionner les playlists Spotify</string>
+@@ -517,7 +517,7 @@
+     <string name="recognition_notification_processing">Identification en cours…</string>
+     <string name="recognition_notification_no_match">Aucun résultat trouvé</string>
+     <string name="recognition_notification_failed">Échec de la reconnaissance</string>
+-    <string name="listen_on_echo_music">Écouter sur Echo Music</string>
++    <string name="listen_on_echo_music">Écouter sur Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Reconnaître la musique</string>
+     <string name="listenbrainz_scrobbling">Scrobbling ListenBrainz</string>
+     <string name="listenbrainz_scrobbling_description">Soumettre automatiquement vos titres écoutés à ListenBrainz</string>
+diff --git a/app/src/main/res/values-fr/updater_strings.xml b/app/src/main/res/values-fr/updater_strings.xml
+index 75fc301..b2f7d97 100644
+--- a/app/src/main/res/values-fr/updater_strings.xml
++++ b/app/src/main/res/values-fr/updater_strings.xml
+@@ -20,7 +20,7 @@
+     <string name="installing_system_update">Installation de la mise à jour\nsystème…</string>
+     <string name="making_update_ready">Préparation de la mise à jour, cela peut prendre un moment</string>
+     <string name="your_app_getting_better">Votre application s\'améliore encore…</string>
+-    <string name="update_includes_features">Cette mise à jour intègre de nouvelles fonctionnalités et les dernières nouveautés d\'Echo Music %1$s, rendant votre application encore plus pratique. En savoir plus sur %2$s.</string>
++    <string name="update_includes_features">Cette mise à jour intègre de nouvelles fonctionnalités et les dernières nouveautés d\'Bytes Music %1$s, rendant votre application encore plus pratique. En savoir plus sur %2$s.</string>
+     <string name="whats_new">Quoi de neuf ?</string>
+     <string name="update_available">Mettre à jour</string>
+     <string name="checking_for_updates">Recherche de mises à jour…</string>
+@@ -35,7 +35,7 @@
+     <string name="mobile_network_warning">Le téléchargement de mises à jour via un réseau mobile ou en itinérance peut entraîner des frais supplémentaires.</string>
+     <string name="update_size">Taille de la mise à jour : %1$s Mo</string>
+     <string name="check_internet_connection">Vérifiez votre connexion Internet et réessayez.</string>
+-    <string name="echo_music_version">Version d\'Echo Music %1$s</string>
++    <string name="echo_music_version">Version d\'Bytes Music %1$s</string>
+     <string name="last_checked">Dernière vérification : %1$s</string>
+     <string name="install">Installer</string>
+     <string name="check_for_update">Rechercher une mise à jour</string>
+@@ -52,7 +52,7 @@
+     <string name="settings_check_updates_title">Rechercher des mises à jour</string>
+     <string name="later">Plus tard</string>
+ 
+-    <string name="echo_music_title">Echo Music</string>
++    <string name="echo_music_title">Bytes Music</string>
+     <string name="developer_section">DÉVELOPPEUR</string>
+     <string name="collaborator_section">COLLABORATEUR</string>
+     <string name="app_info_section">INFORMATIONS SUR L\'APPLICATION</string>
+diff --git a/app/src/main/res/values-ga/strings.xml b/app/src/main/res/values-ga/strings.xml
+index 4da5d6b..67787c4 100644
+--- a/app/src/main/res/values-ga/strings.xml
++++ b/app/src/main/res/values-ga/strings.xml
+@@ -377,7 +377,7 @@
+     <string name="listen_together_smart_resync">Athshioncrónú cliste líonra</string>
+     <string name="listen_together_smart_resync_desc">Déan suas go huathoibríoch leis an óstach tar éis titim naisc</string>
+     <string name="spotify_import_title">Iompórtáil ó Spotify</string>
+-    <string name="spotify_import_desc">Ceangail Spotify, roghnaigh seinnliostaí agus cóipeáil iad chuig seinnliostaí áitiúla Echo Music.</string>
++    <string name="spotify_import_desc">Ceangail Spotify, roghnaigh seinnliostaí agus cóipeáil iad chuig seinnliostaí áitiúla Bytes Music.</string>
+     <string name="spotify_connect">Ceangail Spotify</string>
+     <string name="spotify_refresh">Athnuaigh leabharlann Spotify</string>
+     <string name="spotify_select_sources">Roghnaigh seinnliostaí Spotify</string>
+@@ -421,7 +421,7 @@
+     <string name="recognition_notification_processing">Á aithint…</string>
+     <string name="recognition_notification_no_match">Níor aimsíodh aon mheaitseáil</string>
+     <string name="recognition_notification_failed">Theip ar an aithint</string>
+-    <string name="listen_on_echo_music">Éist ar Echo Music</string>
++    <string name="listen_on_echo_music">Éist ar Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Aithin ceol</string>
+     <string name="echo_brain_beta">Echo Brain (Béite)</string>
+     <string name="echo_brain_enable">Cumasaigh Echo Brain</string>
+diff --git a/app/src/main/res/values-hi/strings.xml b/app/src/main/res/values-hi/strings.xml
+index d17f4d9..32494f3 100644
+--- a/app/src/main/res/values-hi/strings.xml
++++ b/app/src/main/res/values-hi/strings.xml
+@@ -390,7 +390,7 @@
+     <string name="listen_together_smart_resync">स्मार्ट नेटवर्क रीसिंक</string>
+     <string name="listen_together_smart_resync_desc">कनेक्शन टूटने के बाद स्वचालित रूप से होस्ट के साथ तालमेल बिठाएँ</string>
+     <string name="spotify_import_title">Spotify से आयात करें</string>
+-    <string name="spotify_import_desc">Spotify कनेक्ट करें, प्लेलिस्ट चुनें, और उन्हें स्थानीय Echo Music प्लेलिस्ट में मिरर करें।</string>
++    <string name="spotify_import_desc">Spotify कनेक्ट करें, प्लेलिस्ट चुनें, और उन्हें स्थानीय Bytes Music प्लेलिस्ट में मिरर करें।</string>
+     <string name="spotify_connect">Spotify कनेक्ट करें</string>
+     <string name="spotify_refresh">Spotify लाइब्रेरी रीफ़्रेश करें</string>
+     <string name="spotify_select_sources">Spotify प्लेलिस्ट चुनें</string>
+@@ -434,7 +434,7 @@
+     <string name="recognition_notification_processing">पहचान हो रही है…</string>
+     <string name="recognition_notification_no_match">कोई मिलान नहीं मिला</string>
+     <string name="recognition_notification_failed">पहचान विफल</string>
+-    <string name="listen_on_echo_music">Echo Music पर सुनें</string>
++    <string name="listen_on_echo_music">Bytes Music पर सुनें</string>
+     <string name="qs_tile_music_recognizer">संगीत पहचानें</string>
+     <string name="listenbrainz_scrobbling">ListenBrainz स्क्रोब्लिंग</string>
+     <string name="listenbrainz_scrobbling_description">अपने सुने गए ट्रैक स्वचालित रूप से ListenBrainz पर सबमिट करें</string>
+diff --git a/app/src/main/res/values-hr/strings.xml b/app/src/main/res/values-hr/strings.xml
+index 9d4066d..98ae7cf 100644
+--- a/app/src/main/res/values-hr/strings.xml
++++ b/app/src/main/res/values-hr/strings.xml
+@@ -353,7 +353,7 @@
+     <string name="listen_together_smart_resync">Pametna mrežna ponovna sinkronizacija</string>
+     <string name="listen_together_smart_resync_desc">Automatski se uskladite s domaćinom nakon prekida veze</string>
+     <string name="spotify_import_title">Uvezi sa Spotifyja</string>
+-    <string name="spotify_import_desc">Povežite Spotify, odaberite playliste i preslikajte ih u lokalne Echo Music playliste.</string>
++    <string name="spotify_import_desc">Povežite Spotify, odaberite playliste i preslikajte ih u lokalne Bytes Music playliste.</string>
+     <string name="spotify_connect">Poveži Spotify</string>
+     <string name="spotify_refresh">Osvježi Spotify biblioteku</string>
+     <string name="spotify_select_sources">Odaberite Spotify playliste</string>
+@@ -413,7 +413,7 @@
+     <string name="recognition_notification_processing">Identificiranje…</string>
+     <string name="recognition_notification_no_match">Nije pronađen nijedan rezultat</string>
+     <string name="recognition_notification_failed">Prepoznavanje nije uspjelo</string>
+-    <string name="listen_on_echo_music">Slušajte na Echo Musicu</string>
++    <string name="listen_on_echo_music">Slušajte na Bytes Musicu</string>
+     <string name="qs_tile_music_recognizer">Prepoznaj glazbu</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Omogući Echo Brain</string>
+diff --git a/app/src/main/res/values-hu/strings.xml b/app/src/main/res/values-hu/strings.xml
+index 8a8871f..2ea23ae 100644
+--- a/app/src/main/res/values-hu/strings.xml
++++ b/app/src/main/res/values-hu/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">Intelligens hálózati újraszinkronizálás</string>
+     <string name="listen_together_smart_resync_desc">Automatikus felzárkózás a házigazdához a kapcsolat megszakadása után</string>
+     <string name="spotify_import_title">Importálás a Spotifyból</string>
+-    <string name="spotify_import_desc">Csatlakoztasd a Spotifyt, válassz lejátszási listákat, majd tükrözd őket helyi Echo Music-lejátszási listákba.</string>
++    <string name="spotify_import_desc">Csatlakoztasd a Spotifyt, válassz lejátszási listákat, majd tükrözd őket helyi Bytes Music-lejátszási listákba.</string>
+     <string name="spotify_connect">Spotify csatlakoztatása</string>
+     <string name="spotify_refresh">Spotify-könyvtár frissítése</string>
+     <string name="spotify_select_sources">Spotify-lejátszási listák kiválasztása</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Azonosítás…</string>
+     <string name="recognition_notification_no_match">Nincs találat</string>
+     <string name="recognition_notification_failed">A felismerés sikertelen</string>
+-    <string name="listen_on_echo_music">Meghallgatás az Echo Musicban</string>
++    <string name="listen_on_echo_music">Meghallgatás az Bytes Musicban</string>
+     <string name="qs_tile_music_recognizer">Zene felismerése</string>
+     <string name="echo_brain_beta">Echo Brain (béta)</string>
+     <string name="echo_brain_enable">Echo Brain engedélyezése</string>
+diff --git a/app/src/main/res/values-in/strings.xml b/app/src/main/res/values-in/strings.xml
+index 48b7bb7..c5c9108 100644
+--- a/app/src/main/res/values-in/strings.xml
++++ b/app/src/main/res/values-in/strings.xml
+@@ -332,7 +332,7 @@
+     <string name="listen_together_smart_resync">Sinkronisasi Ulang Jaringan Cerdas</string>
+     <string name="listen_together_smart_resync_desc">Secara otomatis mengejar ketertinggalan dari host setelah putus sambungan</string>
+     <string name="spotify_import_title">Impor dari Spotify</string>
+-    <string name="spotify_import_desc">Hubungkan Spotify, pilih daftar putar, dan cerminkan ke dalam daftar putar Echo Music lokal.</string>
++    <string name="spotify_import_desc">Hubungkan Spotify, pilih daftar putar, dan cerminkan ke dalam daftar putar Bytes Music lokal.</string>
+     <string name="spotify_connect">Hubungkan Spotify</string>
+     <string name="spotify_refresh">Segarkan pustaka Spotify</string>
+     <string name="spotify_select_sources">Pilih daftar putar Spotify</string>
+@@ -392,7 +392,7 @@
+     <string name="recognition_notification_processing">Mengidentifikasi…</string>
+     <string name="recognition_notification_no_match">Tidak ditemukan kecocokan</string>
+     <string name="recognition_notification_failed">Pengenalan gagal</string>
+-    <string name="listen_on_echo_music">Dengarkan di Echo Music</string>
++    <string name="listen_on_echo_music">Dengarkan di Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Kenali musik</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Aktifkan Echo Brain</string>
+diff --git a/app/src/main/res/values-it/strings.xml b/app/src/main/res/values-it/strings.xml
+index 3ca6a51..f10b608 100644
+--- a/app/src/main/res/values-it/strings.xml
++++ b/app/src/main/res/values-it/strings.xml
+@@ -374,7 +374,7 @@
+     <string name="listen_together_smart_resync">Risincronizzazione intelligente della rete</string>
+     <string name="listen_together_smart_resync_desc">Raggiungi automaticamente l’host dopo una caduta di connessione</string>
+     <string name="spotify_import_title">Importa da Spotify</string>
+-    <string name="spotify_import_desc">Collega Spotify, scegli le playlist e specchiale in playlist Echo Music locali.</string>
++    <string name="spotify_import_desc">Collega Spotify, scegli le playlist e specchiale in playlist Bytes Music locali.</string>
+     <string name="spotify_connect">Collega Spotify</string>
+     <string name="spotify_refresh">Aggiorna la libreria Spotify</string>
+     <string name="spotify_select_sources">Seleziona le playlist Spotify</string>
+@@ -435,7 +435,7 @@
+     <string name="recognition_notification_processing">Identificazione in corso…</string>
+     <string name="recognition_notification_no_match">Nessuna corrispondenza trovata</string>
+     <string name="recognition_notification_failed">Riconoscimento non riuscito</string>
+-    <string name="listen_on_echo_music">Ascolta su Echo Music</string>
++    <string name="listen_on_echo_music">Ascolta su Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Riconosci la musica</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Abilita Echo Brain</string>
+diff --git a/app/src/main/res/values-iw/strings.xml b/app/src/main/res/values-iw/strings.xml
+index acc0feb..adbc55d 100644
+--- a/app/src/main/res/values-iw/strings.xml
++++ b/app/src/main/res/values-iw/strings.xml
+@@ -352,7 +352,7 @@
+     <string name="listen_together_smart_resync">סנכרון מחדש חכם של הרשת</string>
+     <string name="listen_together_smart_resync_desc">התעדכן אוטומטית עם המארח לאחר ניתוק חיבור</string>
+     <string name="spotify_import_title">ייבא מספוטיפיי</string>
+-    <string name="spotify_import_desc">חבר את Spotify, בחר פלייליסטים ושקף אותם לפלייליסטים מקומיים של Echo Music.</string>
++    <string name="spotify_import_desc">חבר את Spotify, בחר פלייליסטים ושקף אותם לפלייליסטים מקומיים של Bytes Music.</string>
+     <string name="spotify_connect">חבר את Spotify</string>
+     <string name="spotify_refresh">רענן את ספריית Spotify</string>
+     <string name="spotify_select_sources">בחר פלייליסטים של Spotify</string>
+@@ -412,7 +412,7 @@
+     <string name="recognition_notification_processing">מתבצע זיהוי…</string>
+     <string name="recognition_notification_no_match">לא נמצאה התאמה</string>
+     <string name="recognition_notification_failed">הזיהוי נכשל</string>
+-    <string name="listen_on_echo_music">האזנה ב-Echo Music</string>
++    <string name="listen_on_echo_music">האזנה ב-Bytes Music</string>
+     <string name="qs_tile_music_recognizer">זיהוי מוזיקה</string>
+     <string name="echo_brain_beta">Echo Brain (בטא)</string>
+     <string name="echo_brain_enable">הפעלת Echo Brain</string>
+diff --git a/app/src/main/res/values-ja/strings.xml b/app/src/main/res/values-ja/strings.xml
+index d5ef188..48ffb4a 100644
+--- a/app/src/main/res/values-ja/strings.xml
++++ b/app/src/main/res/values-ja/strings.xml
+@@ -334,7 +334,7 @@
+     <string name="listen_together_smart_resync">スマートネットワーク再同期</string>
+     <string name="listen_together_smart_resync_desc">接続が切れた後にホストに自動的に追いつく</string>
+     <string name="spotify_import_title">Spotifyからインポート</string>
+-    <string name="spotify_import_desc">Spotifyに接続し、プレイリストを選択して、ローカルのEcho Musicプレイリストにミラーリングします。</string>
++    <string name="spotify_import_desc">Spotifyに接続し、プレイリストを選択して、ローカルのBytes Musicプレイリストにミラーリングします。</string>
+     <string name="spotify_connect">Spotifyに接続</string>
+     <string name="spotify_refresh">Spotifyライブラリを更新</string>
+     <string name="spotify_select_sources">Spotifyプレイリストを選択</string>
+@@ -394,7 +394,7 @@
+     <string name="recognition_notification_processing">識別中…</string>
+     <string name="recognition_notification_no_match">一致する曲が見つかりませんでした</string>
+     <string name="recognition_notification_failed">認識に失敗しました</string>
+-    <string name="listen_on_echo_music">Echo Musicで聴く</string>
++    <string name="listen_on_echo_music">Bytes Musicで聴く</string>
+     <string name="qs_tile_music_recognizer">音楽を認識</string>
+     <string name="echo_brain_beta">Echo Brain（ベータ版）</string>
+     <string name="echo_brain_enable">Echo Brainを有効にする</string>
+diff --git a/app/src/main/res/values-km/strings.xml b/app/src/main/res/values-km/strings.xml
+index 13acfa0..d40e94d 100644
+--- a/app/src/main/res/values-km/strings.xml
++++ b/app/src/main/res/values-km/strings.xml
+@@ -339,7 +339,7 @@
+     <string name="listen_together_smart_resync">ធ្វើសមកាលកម្មបណ្តាញឆ្លាតវៃឡើងវិញ</string>
+     <string name="listen_together_smart_resync_desc">តាមទាន់ម្ចាស់បន្ទប់ដោយស្វ័យប្រវត្តិបន្ទាប់ពីការតភ្ជាប់ដាច់</string>
+     <string name="spotify_import_title">នាំចូលពី Spotify</string>
+-    <string name="spotify_import_desc">ភ្ជាប់ Spotify ជ្រើសរើសបញ្ជីចាក់ ហើយចម្លងពួកវាទៅក្នុងបញ្ជីចាក់ Echo Music ក្នុងឧបករណ៍។</string>
++    <string name="spotify_import_desc">ភ្ជាប់ Spotify ជ្រើសរើសបញ្ជីចាក់ ហើយចម្លងពួកវាទៅក្នុងបញ្ជីចាក់ Bytes Music ក្នុងឧបករណ៍។</string>
+     <string name="spotify_connect">ភ្ជាប់ Spotify</string>
+     <string name="spotify_refresh">ផ្ទុកបណ្ណាល័យ Spotify ឡើងវិញ</string>
+     <string name="spotify_select_sources">ជ្រើសរើសបញ្ជីចាក់ Spotify</string>
+@@ -383,7 +383,7 @@
+     <string name="recognition_notification_processing">កំពុងសម្គាល់…</string>
+     <string name="recognition_notification_no_match">រកមិនឃើញបទដែលត្រូវគ្នា</string>
+     <string name="recognition_notification_failed">ការសម្គាល់បានបរាជ័យ</string>
+-    <string name="listen_on_echo_music">ស្តាប់លើ Echo Music</string>
++    <string name="listen_on_echo_music">ស្តាប់លើ Bytes Music</string>
+     <string name="qs_tile_music_recognizer">សម្គាល់តន្ត្រី</string>
+     <string name="echo_brain_beta">Echo Brain (សាកល្បង)</string>
+     <string name="echo_brain_enable">បើក Echo Brain</string>
+diff --git a/app/src/main/res/values-ko/strings.xml b/app/src/main/res/values-ko/strings.xml
+index 675fdb6..c649409 100644
+--- a/app/src/main/res/values-ko/strings.xml
++++ b/app/src/main/res/values-ko/strings.xml
+@@ -332,7 +332,7 @@
+     <string name="listen_together_smart_resync">스마트 네트워크 재동기화</string>
+     <string name="listen_together_smart_resync_desc">연결이 끊긴 후 호스트의 재생 위치에 자동으로 맞춥니다</string>
+     <string name="spotify_import_title">Spotify에서 가져오기</string>
+-    <string name="spotify_import_desc">Spotify를 연결하고 재생목록을 선택하여 로컬 Echo Music 재생목록으로 동기화합니다.</string>
++    <string name="spotify_import_desc">Spotify를 연결하고 재생목록을 선택하여 로컬 Bytes Music 재생목록으로 동기화합니다.</string>
+     <string name="spotify_connect">Spotify 연결</string>
+     <string name="spotify_refresh">Spotify 보관함 새로고침</string>
+     <string name="spotify_select_sources">Spotify 재생목록 선택</string>
+@@ -392,7 +392,7 @@
+     <string name="recognition_notification_processing">식별 중…</string>
+     <string name="recognition_notification_no_match">일치하는 결과를 찾을 수 없습니다</string>
+     <string name="recognition_notification_failed">음악 인식 실패</string>
+-    <string name="listen_on_echo_music">Echo Music에서 듣기</string>
++    <string name="listen_on_echo_music">Bytes Music에서 듣기</string>
+     <string name="qs_tile_music_recognizer">음악 인식</string>
+     <string name="echo_brain_beta">Echo Brain(베타)</string>
+     <string name="echo_brain_enable">Echo Brain 사용</string>
+diff --git a/app/src/main/res/values-lt/strings.xml b/app/src/main/res/values-lt/strings.xml
+index a8b170a..8a1161b 100644
+--- a/app/src/main/res/values-lt/strings.xml
++++ b/app/src/main/res/values-lt/strings.xml
+@@ -369,7 +369,7 @@
+     <string name="listen_together_smart_resync">Išmanusis tinklo sinchronizavimas</string>
+     <string name="listen_together_smart_resync_desc">Nutrūkus ryšiui automatiškai susilyginti su vedėju</string>
+     <string name="spotify_import_title">Importuoti iš „Spotify“</string>
+-    <string name="spotify_import_desc">Prijunkite „Spotify“, pasirinkite grojaraščius ir nukopijuokite juos į vietinius „Echo Music“ grojaraščius.</string>
++    <string name="spotify_import_desc">Prijunkite „Spotify“, pasirinkite grojaraščius ir nukopijuokite juos į vietinius „Bytes Music“ grojaraščius.</string>
+     <string name="spotify_connect">Prijungti „Spotify“</string>
+     <string name="spotify_refresh">Atnaujinti „Spotify“ biblioteką</string>
+     <string name="spotify_select_sources">Pasirinkti „Spotify“ grojaraščius</string>
+@@ -413,7 +413,7 @@
+     <string name="recognition_notification_processing">Atpažįstama…</string>
+     <string name="recognition_notification_no_match">Atitikmenų nerasta</string>
+     <string name="recognition_notification_failed">Atpažinti nepavyko</string>
+-    <string name="listen_on_echo_music">Klausytis per „Echo Music“</string>
++    <string name="listen_on_echo_music">Klausytis per „Bytes Music“</string>
+     <string name="qs_tile_music_recognizer">Atpažinti muziką</string>
+     <string name="echo_brain_beta">„Echo Brain“ (beta versija)</string>
+     <string name="echo_brain_enable">Įjungti „Echo Brain“</string>
+diff --git a/app/src/main/res/values-mfe/strings.xml b/app/src/main/res/values-mfe/strings.xml
+index dd99738..73345ff 100644
+--- a/app/src/main/res/values-mfe/strings.xml
++++ b/app/src/main/res/values-mfe/strings.xml
+@@ -348,7 +348,7 @@
+     <string name="listen_together_smart_resync">Resinkronizasion intelizan rezo</string>
+     <string name="listen_together_smart_resync_desc">Ratrap lot otomatikman apre enn koupir koneksion</string>
+     <string name="spotify_import_title">Inporte depi Spotify</string>
+-    <string name="spotify_import_desc">Konekte Spotify, swazir bann list lekout ek kopi zot dan bann list lekout lokal Echo Music.</string>
++    <string name="spotify_import_desc">Konekte Spotify, swazir bann list lekout ek kopi zot dan bann list lekout lokal Bytes Music.</string>
+     <string name="spotify_connect">Konekte Spotify</string>
+     <string name="spotify_refresh">Rafresi bibliotek Spotify</string>
+     <string name="spotify_select_sources">Seleksionn bann list lekout Spotify</string>
+@@ -392,7 +392,7 @@
+     <string name="recognition_notification_processing">Pe idantifie…</string>
+     <string name="recognition_notification_no_match">Okenn korespondans pa finn trouve</string>
+     <string name="recognition_notification_failed">Rekonesans finn fel</string>
+-    <string name="listen_on_echo_music">Ekoute lor Echo Music</string>
++    <string name="listen_on_echo_music">Ekoute lor Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Rekonet mizik</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Aktiv Echo Brain</string>
+diff --git a/app/src/main/res/values-ml/strings.xml b/app/src/main/res/values-ml/strings.xml
+index c00bbce..4b9e2ca 100644
+--- a/app/src/main/res/values-ml/strings.xml
++++ b/app/src/main/res/values-ml/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">സ്മാർട്ട് നെറ്റ്‌വർക്ക് വീണ്ടും സമന്വയിപ്പിക്കൽ</string>
+     <string name="listen_together_smart_resync_desc">കണക്ഷൻ തകർന്നതിന് ശേഷം ഹോസ്റ്റുമായി യാന്ത്രികമായി പൊരുത്തപ്പെടുക</string>
+     <string name="spotify_import_title">Spotify-ൽ നിന്ന് ഇറക്കുമതി ചെയ്യുക</string>
+-    <string name="spotify_import_desc">Spotify കണക്റ്റുചെയ്യുക, പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക, അവ പ്രാദേശിക Echo Music പ്ലേലിസ്റ്റുകളിലേക്ക് മിറർ ചെയ്യുക.</string>
++    <string name="spotify_import_desc">Spotify കണക്റ്റുചെയ്യുക, പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക, അവ പ്രാദേശിക Bytes Music പ്ലേലിസ്റ്റുകളിലേക്ക് മിറർ ചെയ്യുക.</string>
+     <string name="spotify_connect">Spotify കണക്റ്റുചെയ്യുക</string>
+     <string name="spotify_refresh">Spotify ലൈബ്രറി പുതുക്കുക</string>
+     <string name="spotify_select_sources">Spotify പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">തിരിച്ചറിയുന്നു…</string>
+     <string name="recognition_notification_no_match">പൊരുത്തമൊന്നും കണ്ടെത്തിയില്ല</string>
+     <string name="recognition_notification_failed">തിരിച്ചറിയൽ പരാജയപ്പെട്ടു</string>
+-    <string name="listen_on_echo_music">Echo Music-ൽ കേൾക്കുക</string>
++    <string name="listen_on_echo_music">Bytes Music-ൽ കേൾക്കുക</string>
+     <string name="qs_tile_music_recognizer">സംഗീതം തിരിച്ചറിയുക</string>
+     <string name="echo_brain_beta">Echo Brain (ബീറ്റ)</string>
+     <string name="echo_brain_enable">Echo Brain പ്രവർത്തനക്ഷമമാക്കുക</string>
+diff --git a/app/src/main/res/values-ms/strings.xml b/app/src/main/res/values-ms/strings.xml
+index f3d621d..d8d9527 100644
+--- a/app/src/main/res/values-ms/strings.xml
++++ b/app/src/main/res/values-ms/strings.xml
+@@ -339,7 +339,7 @@
+     <string name="listen_together_smart_resync">Penyegerakan Semula Rangkaian Pintar</string>
+     <string name="listen_together_smart_resync_desc">Selaras semula dengan hos secara automatik selepas sambungan terputus</string>
+     <string name="spotify_import_title">Import daripada Spotify</string>
+-    <string name="spotify_import_desc">Sambungkan Spotify, pilih senarai main dan salinnya ke senarai main Echo Music setempat.</string>
++    <string name="spotify_import_desc">Sambungkan Spotify, pilih senarai main dan salinnya ke senarai main Bytes Music setempat.</string>
+     <string name="spotify_connect">Sambungkan Spotify</string>
+     <string name="spotify_refresh">Muat semula pustaka Spotify</string>
+     <string name="spotify_select_sources">Pilih senarai main Spotify</string>
+@@ -383,7 +383,7 @@
+     <string name="recognition_notification_processing">Mengenal pasti…</string>
+     <string name="recognition_notification_no_match">Tiada padanan ditemui</string>
+     <string name="recognition_notification_failed">Pengecaman gagal</string>
+-    <string name="listen_on_echo_music">Dengar di Echo Music</string>
++    <string name="listen_on_echo_music">Dengar di Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Kenal pasti muzik</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Dayakan Echo Brain</string>
+diff --git a/app/src/main/res/values-nb-rNO/strings.xml b/app/src/main/res/values-nb-rNO/strings.xml
+index 113d4d8..70da602 100644
+--- a/app/src/main/res/values-nb-rNO/strings.xml
++++ b/app/src/main/res/values-nb-rNO/strings.xml
+@@ -339,7 +339,7 @@
+     <string name="listen_together_smart_resync">Smart nettverkssynkronisering</string>
+     <string name="listen_together_smart_resync_desc">Ta automatisk igjen verten etter et tilkoblingsbrudd</string>
+     <string name="spotify_import_title">Importer fra Spotify</string>
+-    <string name="spotify_import_desc">Koble til Spotify, velg spillelister, og speil dem til lokale Echo Music-spillelister.</string>
++    <string name="spotify_import_desc">Koble til Spotify, velg spillelister, og speil dem til lokale Bytes Music-spillelister.</string>
+     <string name="spotify_connect">Koble til Spotify</string>
+     <string name="spotify_refresh">Oppdater Spotify-biblioteket</string>
+     <string name="spotify_select_sources">Velg Spotify-spillelister</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Identifiserer…</string>
+     <string name="recognition_notification_no_match">Fant ingen treff</string>
+     <string name="recognition_notification_failed">Gjenkjenningen mislyktes</string>
+-    <string name="listen_on_echo_music">Lytt på Echo Music</string>
++    <string name="listen_on_echo_music">Lytt på Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Gjenkjenn musikk</string>
+     <string name="echo_brain_beta">Echo Brain (beta)</string>
+     <string name="echo_brain_enable">Aktiver Echo Brain</string>
+diff --git a/app/src/main/res/values-night/strings.xml b/app/src/main/res/values-night/strings.xml
+index 6ff9334..2f9ae9a 100644
+--- a/app/src/main/res/values-night/strings.xml
++++ b/app/src/main/res/values-night/strings.xml
+@@ -323,7 +323,7 @@
+     <string name="backup_create_failed">Couldn\'t create backup</string>
+     <string name="restore_failed">Failed to restore backup</string>
+     <string name="discord_integration">Discord Integration</string>
+-    <string name="discord_information">Echo Music uses the KizzyRPC library to set your Discord account\'s status. This involves using the Discord Gateway connection, which may be considered a violation of Discord\'s Terms of Service. However, there are no known cases of user accounts being suspended for this reason. Use at your own risk.\nEcho Music will only extract your token, and everything else is stored locally.</string>
++    <string name="discord_information">Bytes Music uses the KizzyRPC library to set your Discord account\'s status. This involves using the Discord Gateway connection, which may be considered a violation of Discord\'s Terms of Service. However, there are no known cases of user accounts being suspended for this reason. Use at your own risk.\nBytes Music will only extract your token, and everything else is stored locally.</string>
+     <string name="dismiss">Dismiss</string>
+     <string name="options">Options</string>
+     <string name="preview">Preview</string>
+@@ -349,7 +349,7 @@
+     <string name="listen_together_smart_resync">Smart Network Resync</string>
+     <string name="listen_together_smart_resync_desc">Automatically catch up with the host after a connection drop</string>
+     <string name="spotify_import_title">Import from Spotify</string>
+-    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them to local Echo Music playlists.</string>
++    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them to local Bytes Music playlists.</string>
+     <string name="spotify_connect">Connect Spotify</string>
+     <string name="spotify_refresh">Refresh Spotify library</string>
+     <string name="spotify_select_sources">Select Spotify playlists</string>
+@@ -393,7 +393,7 @@
+     <string name="recognition_notification_processing">Identifying…</string>
+     <string name="recognition_notification_no_match">No match found</string>
+     <string name="recognition_notification_failed">Recognition failed</string>
+-    <string name="listen_on_echo_music">Listen on Echo Music</string>
++    <string name="listen_on_echo_music">Listen on Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Recognize music</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Enable Echo Brain</string>
+diff --git a/app/src/main/res/values-nl/strings.xml b/app/src/main/res/values-nl/strings.xml
+index ba74173..e8d56ab 100644
+--- a/app/src/main/res/values-nl/strings.xml
++++ b/app/src/main/res/values-nl/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">Slimme netwerkresynchronisatie</string>
+     <string name="listen_together_smart_resync_desc">Loop automatisch weer gelijk met de host na een verbindingsonderbreking</string>
+     <string name="spotify_import_title">Importeren vanuit Spotify</string>
+-    <string name="spotify_import_desc">Verbind Spotify, kies afspeellijsten en kopieer ze naar lokale Echo Music-afspeellijsten.</string>
++    <string name="spotify_import_desc">Verbind Spotify, kies afspeellijsten en kopieer ze naar lokale Bytes Music-afspeellijsten.</string>
+     <string name="spotify_connect">Spotify verbinden</string>
+     <string name="spotify_refresh">Spotify-bibliotheek vernieuwen</string>
+     <string name="spotify_select_sources">Selecteer Spotify-afspeellijsten</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">Herkennen…</string>
+     <string name="recognition_notification_no_match">Geen overeenkomst gevonden</string>
+     <string name="recognition_notification_failed">Herkenning mislukt</string>
+-    <string name="listen_on_echo_music">Luisteren op Echo Music</string>
++    <string name="listen_on_echo_music">Luisteren op Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Muziek herkennen</string>
+     <string name="echo_brain_beta">Echo Brain (bèta)</string>
+     <string name="echo_brain_enable">Echo Brain inschakelen</string>
+diff --git a/app/src/main/res/values-nn/strings.xml b/app/src/main/res/values-nn/strings.xml
+index 4ecd98d..fa94c57 100644
+--- a/app/src/main/res/values-nn/strings.xml
++++ b/app/src/main/res/values-nn/strings.xml
+@@ -349,7 +349,7 @@
+     <string name="listen_together_smart_resync">Smart nettverkssynkronisering</string>
+     <string name="listen_together_smart_resync_desc">Ta automatisk igjen verten etter at tilkoplinga fell ut</string>
+     <string name="spotify_import_title">Importer frå Spotify</string>
+-    <string name="spotify_import_desc">Kople til Spotify, vel spelelister og spegl dei til lokale Echo Music-spelelister.</string>
++    <string name="spotify_import_desc">Kople til Spotify, vel spelelister og spegl dei til lokale Bytes Music-spelelister.</string>
+     <string name="spotify_connect">Kople til Spotify</string>
+     <string name="spotify_refresh">Oppdater Spotify-biblioteket</string>
+     <string name="spotify_select_sources">Vel Spotify-spelelister</string>
+@@ -393,7 +393,7 @@
+     <string name="recognition_notification_processing">Identifiserer…</string>
+     <string name="recognition_notification_no_match">Fann ingen treff</string>
+     <string name="recognition_notification_failed">Attkjenninga mislukkast</string>
+-    <string name="listen_on_echo_music">Lytt på Echo Music</string>
++    <string name="listen_on_echo_music">Lytt på Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Kjenn att musikk</string>
+     <string name="echo_brain_beta">Echo Brain (beta)</string>
+     <string name="echo_brain_enable">Slå på Echo Brain</string>
+diff --git a/app/src/main/res/values-pa/strings.xml b/app/src/main/res/values-pa/strings.xml
+index f09e2e2..5057292 100644
+--- a/app/src/main/res/values-pa/strings.xml
++++ b/app/src/main/res/values-pa/strings.xml
+@@ -292,7 +292,7 @@
+     <string name="listen_together_smart_resync">ਸਮਾਰਟ ਨੈੱਟਵਰਕ ਰੀਸਿੰਕ</string>
+     <string name="listen_together_smart_resync_desc">ਕਨੈਕਸ਼ਨ ਡਿੱਗਣ ਤੋਂ ਬਾਅਦ ਆਪਣੇ ਆਪ ਹੋਸਟ ਨਾਲ ਮੇਲ ਕਰੋ</string>
+     <string name="spotify_import_title">Spotify ਤੋਂ ਅਯਾਤ ਕਰੋ</string>
+-    <string name="spotify_import_desc">Spotify ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਸਥਾਨਕ Echo Music ਪਲੇਲਿਸਟਾਂ ਵਿੱਚ ਸ਼ੀਸ਼ਾ ਬਣਾਓ।</string>
++    <string name="spotify_import_desc">Spotify ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਸਥਾਨਕ Bytes Music ਪਲੇਲਿਸਟਾਂ ਵਿੱਚ ਸ਼ੀਸ਼ਾ ਬਣਾਓ।</string>
+     <string name="spotify_connect">Spotify ਕਨੈਕਟ ਕਰੋ</string>
+     <string name="spotify_refresh">Spotify ਲਾਇਬ੍ਰੇਰੀ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</string>
+     <string name="spotify_select_sources">Spotify ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ</string>
+@@ -403,7 +403,7 @@
+     <string name="recognition_notification_processing">ਪਛਾਣ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</string>
+     <string name="recognition_notification_no_match">ਕੋਈ ਮੇਲ ਨਹੀਂ ਮਿਲਿਆ</string>
+     <string name="recognition_notification_failed">ਪਛਾਣ ਅਸਫਲ ਰਹੀ</string>
+-    <string name="listen_on_echo_music">Echo Music ਉੱਤੇ ਸੁਣੋ</string>
++    <string name="listen_on_echo_music">Bytes Music ਉੱਤੇ ਸੁਣੋ</string>
+     <string name="qs_tile_music_recognizer">ਸੰਗੀਤ ਪਛਾਣੋ</string>
+     <string name="echo_brain_beta">Echo Brain (ਬੀਟਾ)</string>
+     <string name="echo_brain_enable">Echo Brain ਚਾਲੂ ਕਰੋ</string>
+diff --git a/app/src/main/res/values-pl/strings.xml b/app/src/main/res/values-pl/strings.xml
+index e83823b..41e8ae9 100644
+--- a/app/src/main/res/values-pl/strings.xml
++++ b/app/src/main/res/values-pl/strings.xml
+@@ -363,7 +363,7 @@
+     <string name="listen_together_smart_resync">Inteligentna resynchronizacja sieci</string>
+     <string name="listen_together_smart_resync_desc">Automatycznie dogoń gospodarza po przerwaniu połączenia</string>
+     <string name="spotify_import_title">Importuj z Spotify</string>
+-    <string name="spotify_import_desc">Połącz Spotify, wybierz playlisty i odzwierciedl je w lokalnych playlistach Echo Music.</string>
++    <string name="spotify_import_desc">Połącz Spotify, wybierz playlisty i odzwierciedl je w lokalnych playlistach Bytes Music.</string>
+     <string name="spotify_connect">Połącz Spotify</string>
+     <string name="spotify_refresh">Odśwież bibliotekę Spotify</string>
+     <string name="spotify_select_sources">Wybierz playlisty Spotify</string>
+@@ -423,7 +423,7 @@
+     <string name="recognition_notification_processing">Rozpoznawanie…</string>
+     <string name="recognition_notification_no_match">Nie znaleziono dopasowania</string>
+     <string name="recognition_notification_failed">Rozpoznawanie nie powiodło się</string>
+-    <string name="listen_on_echo_music">Posłuchaj w Echo Music</string>
++    <string name="listen_on_echo_music">Posłuchaj w Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Rozpoznaj muzykę</string>
+     <string name="echo_brain_beta">Echo Brain (wersja beta)</string>
+     <string name="echo_brain_enable">Włącz Echo Brain</string>
+diff --git a/app/src/main/res/values-pt-rBR/strings.xml b/app/src/main/res/values-pt-rBR/strings.xml
+index 1676878..038131d 100644
+--- a/app/src/main/res/values-pt-rBR/strings.xml
++++ b/app/src/main/res/values-pt-rBR/strings.xml
+@@ -353,7 +353,7 @@
+     <string name="listen_together_smart_resync">Ressincronização inteligente de rede</string>
+     <string name="listen_together_smart_resync_desc">Acompanhar automaticamente o anfitrião após uma queda de conexão</string>
+     <string name="spotify_import_title">Importar do Spotify</string>
+-    <string name="spotify_import_desc">Conecte o Spotify, escolha playlists e espelhe-as em playlists locais do Echo Music.</string>
++    <string name="spotify_import_desc">Conecte o Spotify, escolha playlists e espelhe-as em playlists locais do Bytes Music.</string>
+     <string name="spotify_connect">Conectar Spotify</string>
+     <string name="spotify_refresh">Atualizar biblioteca do Spotify</string>
+     <string name="spotify_select_sources">Selecionar playlists do Spotify</string>
+@@ -413,7 +413,7 @@
+     <string name="recognition_notification_processing">Identificando…</string>
+     <string name="recognition_notification_no_match">Nenhuma correspondência encontrada</string>
+     <string name="recognition_notification_failed">Falha no reconhecimento</string>
+-    <string name="listen_on_echo_music">Ouvir no Echo Music</string>
++    <string name="listen_on_echo_music">Ouvir no Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Reconhecer música</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Ativar o Echo Brain</string>
+diff --git a/app/src/main/res/values-pt/strings.xml b/app/src/main/res/values-pt/strings.xml
+index adf511a..d1512e3 100644
+--- a/app/src/main/res/values-pt/strings.xml
++++ b/app/src/main/res/values-pt/strings.xml
+@@ -352,7 +352,7 @@
+     <string name="listen_together_smart_resync">Ressincronização inteligente de rede</string>
+     <string name="listen_together_smart_resync_desc">Acompanhar automaticamente o anfitrião após uma queda de ligação</string>
+     <string name="spotify_import_title">Importar do Spotify</string>
+-    <string name="spotify_import_desc">Ligue o Spotify, escolha listas de reprodução e espelhe-as em listas de reprodução locais Echo Music.</string>
++    <string name="spotify_import_desc">Ligue o Spotify, escolha listas de reprodução e espelhe-as em listas de reprodução locais Bytes Music.</string>
+     <string name="spotify_connect">Ligar Spotify</string>
+     <string name="spotify_refresh">Atualizar biblioteca do Spotify</string>
+     <string name="spotify_select_sources">Selecionar listas de reprodução do Spotify</string>
+@@ -412,7 +412,7 @@
+     <string name="recognition_notification_processing">A identificar…</string>
+     <string name="recognition_notification_no_match">Nenhuma correspondência encontrada</string>
+     <string name="recognition_notification_failed">Falha no reconhecimento</string>
+-    <string name="listen_on_echo_music">Ouvir no Echo Music</string>
++    <string name="listen_on_echo_music">Ouvir no Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Reconhecer música</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Ativar o Echo Brain</string>
+diff --git a/app/src/main/res/values-ro/strings.xml b/app/src/main/res/values-ro/strings.xml
+index f0fc6ec..040dfde 100644
+--- a/app/src/main/res/values-ro/strings.xml
++++ b/app/src/main/res/values-ro/strings.xml
+@@ -353,7 +353,7 @@
+     <string name="listen_together_smart_resync">Resincronizare inteligentă a rețelei</string>
+     <string name="listen_together_smart_resync_desc">Prinde din urmă automat gazda după o cădere a conexiunii</string>
+     <string name="spotify_import_title">Importă din Spotify</string>
+-    <string name="spotify_import_desc">Conectează Spotify, alege playlisturile și oglindește-le în playlisturi locale Echo Music.</string>
++    <string name="spotify_import_desc">Conectează Spotify, alege playlisturile și oglindește-le în playlisturi locale Bytes Music.</string>
+     <string name="spotify_connect">Conectează Spotify</string>
+     <string name="spotify_refresh">Reîmprospătează biblioteca Spotify</string>
+     <string name="spotify_select_sources">Selectează playlisturile Spotify</string>
+@@ -413,7 +413,7 @@
+     <string name="recognition_notification_processing">Se identifică…</string>
+     <string name="recognition_notification_no_match">Nu s-a găsit nicio potrivire</string>
+     <string name="recognition_notification_failed">Recunoașterea a eșuat</string>
+-    <string name="listen_on_echo_music">Ascultă în Echo Music</string>
++    <string name="listen_on_echo_music">Ascultă în Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Recunoaște muzica</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Activează Echo Brain</string>
+diff --git a/app/src/main/res/values-ru/strings.xml b/app/src/main/res/values-ru/strings.xml
+index 4b93e3f..54b6bfb 100644
+--- a/app/src/main/res/values-ru/strings.xml
++++ b/app/src/main/res/values-ru/strings.xml
+@@ -363,7 +363,7 @@
+     <string name="listen_together_smart_resync">Умная повторная синхронизация сети</string>
+     <string name="listen_together_smart_resync_desc">Автоматически подстраиваться под ведущего после обрыва соединения</string>
+     <string name="spotify_import_title">Импорт из Spotify</string>
+-    <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах Echo Music.</string>
++    <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах Bytes Music.</string>
+     <string name="spotify_connect">Подключить Spotify</string>
+     <string name="spotify_refresh">Обновить библиотеку Spotify</string>
+     <string name="spotify_select_sources">Выбрать плейлисты Spotify</string>
+@@ -423,7 +423,7 @@
+     <string name="recognition_notification_processing">Определяю…</string>
+     <string name="recognition_notification_no_match">Нет совпадений</string>
+     <string name="recognition_notification_failed">Ошибка распознавания</string>
+-    <string name="listen_on_echo_music">Слушать в Echo Music</string>
++    <string name="listen_on_echo_music">Слушать в Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Распознать музыку</string>
+     <string name="echo_brain_beta">Echo Brain (Бета)</string>
+     <string name="echo_brain_enable">Включить Echo Brain</string>
+diff --git a/app/src/main/res/values-sk/strings.xml b/app/src/main/res/values-sk/strings.xml
+index 4ccb08b..c797878 100644
+--- a/app/src/main/res/values-sk/strings.xml
++++ b/app/src/main/res/values-sk/strings.xml
+@@ -363,7 +363,7 @@
+     <string name="listen_together_smart_resync">Inteligentná resynchronizácia siete</string>
+     <string name="listen_together_smart_resync_desc">Po prerušení pripojenia sa automaticky dobehnite s hosťom</string>
+     <string name="spotify_import_title">Importovať zo Spotify</string>
+-    <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov Echo Music.</string>
++    <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov Bytes Music.</string>
+     <string name="spotify_connect">Pripojiť Spotify</string>
+     <string name="spotify_refresh">Obnoviť knižnicu Spotify</string>
+     <string name="spotify_select_sources">Vybrať playlisty Spotify</string>
+@@ -423,7 +423,7 @@
+     <string name="recognition_notification_processing">Rozpoznáva sa…</string>
+     <string name="recognition_notification_no_match">Nenašla sa žiadna zhoda</string>
+     <string name="recognition_notification_failed">Rozpoznávanie zlyhalo</string>
+-    <string name="listen_on_echo_music">Počúvať v Echo Music</string>
++    <string name="listen_on_echo_music">Počúvať v Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Rozpoznať hudbu</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Povoliť Echo Brain</string>
+diff --git a/app/src/main/res/values-sl/strings.xml b/app/src/main/res/values-sl/strings.xml
+index 41166ae..69c2cd0 100644
+--- a/app/src/main/res/values-sl/strings.xml
++++ b/app/src/main/res/values-sl/strings.xml
+@@ -379,7 +379,7 @@
+     <string name="listen_together_smart_resync">Pametna ponovna sinhronizacija omrežja</string>
+     <string name="listen_together_smart_resync_desc">Po prekinitvi povezave samodejno sledite gostitelju</string>
+     <string name="spotify_import_title">Uvozi iz Spotifyja</string>
+-    <string name="spotify_import_desc">Povežite Spotify, izberite sezname predvajanja in jih preslikajte v lokalne sezname Echo Music.</string>
++    <string name="spotify_import_desc">Povežite Spotify, izberite sezname predvajanja in jih preslikajte v lokalne sezname Bytes Music.</string>
+     <string name="spotify_connect">Poveži Spotify</string>
+     <string name="spotify_refresh">Osveži knjižnico Spotify</string>
+     <string name="spotify_select_sources">Izberite sezname predvajanja Spotify</string>
+@@ -441,7 +441,7 @@
+     <string name="recognition_notification_processing">Prepoznavanje …</string>
+     <string name="recognition_notification_no_match">Ni najdenih zadetkov</string>
+     <string name="recognition_notification_failed">Prepoznavanje ni uspelo</string>
+-    <string name="listen_on_echo_music">Poslušaj v aplikaciji Echo Music</string>
++    <string name="listen_on_echo_music">Poslušaj v aplikaciji Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Prepoznaj glasbo</string>
+     <string name="echo_brain_beta">Echo Brain (beta)</string>
+     <string name="echo_brain_enable">Omogoči Echo Brain</string>
+diff --git a/app/src/main/res/values-sv/strings.xml b/app/src/main/res/values-sv/strings.xml
+index 9713168..27dca71 100644
+--- a/app/src/main/res/values-sv/strings.xml
++++ b/app/src/main/res/values-sv/strings.xml
+@@ -349,7 +349,7 @@
+     <string name="listen_together_smart_resync">Smart nätverkssynkronisering</string>
+     <string name="listen_together_smart_resync_desc">Synkronisera automatiskt med värden efter ett anslutningsavbrott</string>
+     <string name="spotify_import_title">Importera från Spotify</string>
+-    <string name="spotify_import_desc">Anslut Spotify, välj spellistor och spegla dem till lokala spellistor i Echo Music.</string>
++    <string name="spotify_import_desc">Anslut Spotify, välj spellistor och spegla dem till lokala spellistor i Bytes Music.</string>
+     <string name="spotify_connect">Anslut Spotify</string>
+     <string name="spotify_refresh">Uppdatera Spotify-biblioteket</string>
+     <string name="spotify_select_sources">Välj Spotify-spellistor</string>
+@@ -393,7 +393,7 @@
+     <string name="recognition_notification_processing">Identifierar…</string>
+     <string name="recognition_notification_no_match">Ingen matchning hittades</string>
+     <string name="recognition_notification_failed">Igenkänningen misslyckades</string>
+-    <string name="listen_on_echo_music">Lyssna i Echo Music</string>
++    <string name="listen_on_echo_music">Lyssna i Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Identifiera musik</string>
+     <string name="echo_brain_beta">Echo Brain (beta)</string>
+     <string name="echo_brain_enable">Aktivera Echo Brain</string>
+diff --git a/app/src/main/res/values-ta/strings.xml b/app/src/main/res/values-ta/strings.xml
+index bf9e7ea..a1d4f75 100644
+--- a/app/src/main/res/values-ta/strings.xml
++++ b/app/src/main/res/values-ta/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">ஸ்மார்ட் நெட்வொர்க் மறு ஒத்திசைவு</string>
+     <string name="listen_together_smart_resync_desc">இணைப்பு துண்டிக்கப்பட்ட பிறகு தானாகவே ஹோஸ்டுடன் இணைந்து கொள்ளுங்கள்</string>
+     <string name="spotify_import_title">Spotify இலிருந்து இறக்குமதி செய்க</string>
+-    <string name="spotify_import_desc">Spotify ஐ இணைக்கவும், பிளேலிஸ்ட்களைத் தேர்வுசெய்க மற்றும் அவற்றை உள்ளூர் Echo Music பிளேலிஸ்ட்களில் பிரதிபலிக்கவும்.</string>
++    <string name="spotify_import_desc">Spotify ஐ இணைக்கவும், பிளேலிஸ்ட்களைத் தேர்வுசெய்க மற்றும் அவற்றை உள்ளூர் Bytes Music பிளேலிஸ்ட்களில் பிரதிபலிக்கவும்.</string>
+     <string name="spotify_connect">Spotify ஐ இணை</string>
+     <string name="spotify_refresh">Spotify நூலகத்தைப் புதுப்பி</string>
+     <string name="spotify_select_sources">Spotify பிளேலிஸ்ட்களைத் தேர்ந்தெடு</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">அடையாளம் காண்கிறது…</string>
+     <string name="recognition_notification_no_match">பொருத்தம் எதுவும் கிடைக்கவில்லை</string>
+     <string name="recognition_notification_failed">அடையாளம் காண முடியவில்லை</string>
+-    <string name="listen_on_echo_music">Echo Music இல் கேளுங்கள்</string>
++    <string name="listen_on_echo_music">Bytes Music இல் கேளுங்கள்</string>
+     <string name="qs_tile_music_recognizer">இசையை அடையாளம் காண்</string>
+     <string name="echo_brain_beta">Echo Brain (பீட்டா)</string>
+     <string name="echo_brain_enable">Echo Brain ஐ இயக்கு</string>
+diff --git a/app/src/main/res/values-te/strings.xml b/app/src/main/res/values-te/strings.xml
+index 99df9b4..32c54ef 100644
+--- a/app/src/main/res/values-te/strings.xml
++++ b/app/src/main/res/values-te/strings.xml
+@@ -342,7 +342,7 @@
+     <string name="listen_together_smart_resync">స్మార్ట్ నెట్‌వర్క్ రీసింక్</string>
+     <string name="listen_together_smart_resync_desc">కనెక్షన్ పడిపోయిన తర్వాత హోస్ట్‌తో స్వయంచాలకంగా అనుగుణంగా ఉండండి</string>
+     <string name="spotify_import_title">Spotify నుండి దిగుమతి చేయండి</string>
+-    <string name="spotify_import_desc">Spotify ను కనెక్ట్ చేయండి, ప్లేలిస్ట్‌లను ఎంచుకోండి మరియు వాటిని స్థానిక Echo Music ప్లేలిస్ట్‌లలో ప్రతిబింబించండి.</string>
++    <string name="spotify_import_desc">Spotify ను కనెక్ట్ చేయండి, ప్లేలిస్ట్‌లను ఎంచుకోండి మరియు వాటిని స్థానిక Bytes Music ప్లేలిస్ట్‌లలో ప్రతిబింబించండి.</string>
+     <string name="spotify_connect">Spotify ను కనెక్ట్ చేయి</string>
+     <string name="spotify_refresh">Spotify లైబ్రరీని రిఫ్రెష్ చేయి</string>
+     <string name="spotify_select_sources">Spotify ప్లేలిస్ట్‌లను ఎంచుకోండి</string>
+@@ -402,7 +402,7 @@
+     <string name="recognition_notification_processing">గుర్తిస్తోంది…</string>
+     <string name="recognition_notification_no_match">సరిపోలిక కనుగొనబడలేదు</string>
+     <string name="recognition_notification_failed">గుర్తింపు విఫలమైంది</string>
+-    <string name="listen_on_echo_music">Echo Musicలో వినండి</string>
++    <string name="listen_on_echo_music">Bytes Musicలో వినండి</string>
+     <string name="qs_tile_music_recognizer">సంగీతాన్ని గుర్తించండి</string>
+     <string name="echo_brain_beta">Echo Brain (బీటా)</string>
+     <string name="echo_brain_enable">Echo Brainను ప్రారంభించండి</string>
+diff --git a/app/src/main/res/values-th/strings.xml b/app/src/main/res/values-th/strings.xml
+index d3af33a..9b095c6 100644
+--- a/app/src/main/res/values-th/strings.xml
++++ b/app/src/main/res/values-th/strings.xml
+@@ -339,7 +339,7 @@
+     <string name="listen_together_smart_resync">ซิงค์เครือข่ายอัจฉริยะ</string>
+     <string name="listen_together_smart_resync_desc">ตามให้ทันโฮสต์โดยอัตโนมัติหลังการเชื่อมต่อหลุด</string>
+     <string name="spotify_import_title">นำเข้าจาก Spotify</string>
+-    <string name="spotify_import_desc">เชื่อมต่อ Spotify เลือกเพลย์ลิสต์ แล้วคัดลอกมาเป็นเพลย์ลิสต์ใน Echo Music</string>
++    <string name="spotify_import_desc">เชื่อมต่อ Spotify เลือกเพลย์ลิสต์ แล้วคัดลอกมาเป็นเพลย์ลิสต์ใน Bytes Music</string>
+     <string name="spotify_connect">เชื่อมต่อ Spotify</string>
+     <string name="spotify_refresh">รีเฟรชคลังเพลง Spotify</string>
+     <string name="spotify_select_sources">เลือกเพลย์ลิสต์ Spotify</string>
+@@ -383,7 +383,7 @@
+     <string name="recognition_notification_processing">กำลังระบุเพลง…</string>
+     <string name="recognition_notification_no_match">ไม่พบเพลงที่ตรงกัน</string>
+     <string name="recognition_notification_failed">การจดจำเพลงล้มเหลว</string>
+-    <string name="listen_on_echo_music">ฟังบน Echo Music</string>
++    <string name="listen_on_echo_music">ฟังบน Bytes Music</string>
+     <string name="qs_tile_music_recognizer">จดจำเพลง</string>
+     <string name="echo_brain_beta">Echo Brain (เบต้า)</string>
+     <string name="echo_brain_enable">เปิดใช้ Echo Brain</string>
+diff --git a/app/src/main/res/values-tr/strings.xml b/app/src/main/res/values-tr/strings.xml
+index 0bb7bcc..6c723dc 100644
+--- a/app/src/main/res/values-tr/strings.xml
++++ b/app/src/main/res/values-tr/strings.xml
+@@ -362,7 +362,7 @@
+     <string name="listen_together_smart_resync">Akıllı Ağ Yeniden Senkronizasyonu</string>
+     <string name="listen_together_smart_resync_desc">Bağlantı kesildikten sonra sunucuyu otomatik olarak yakala</string>
+     <string name="spotify_import_title">Spotify\'dan İçe Aktar</string>
+-    <string name="spotify_import_desc">Spotify\'ı bağlayın, çalma listeleri seçin ve bunları yerel Echo Music çalma listelerine yansıtın.</string>
++    <string name="spotify_import_desc">Spotify\'ı bağlayın, çalma listeleri seçin ve bunları yerel Bytes Music çalma listelerine yansıtın.</string>
+     <string name="spotify_connect">Spotify\'ı Bağla</string>
+     <string name="spotify_refresh">Spotify kütüphanesini yenile</string>
+     <string name="spotify_select_sources">Spotify çalma listelerini seç</string>
+@@ -421,7 +421,7 @@
+     <string name="recognition_notification_processing">Tanımlanıyor…</string>
+     <string name="recognition_notification_no_match">Eşleşme bulunamadı</string>
+     <string name="recognition_notification_failed">Tanıma başarısız oldu</string>
+-    <string name="listen_on_echo_music">Echo Music\'te dinle</string>
++    <string name="listen_on_echo_music">Bytes Music\'te dinle</string>
+     <string name="qs_tile_music_recognizer">Müziği tanı</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Echo Brain\'i etkinleştir</string>
+diff --git a/app/src/main/res/values-tr/updater_strings.xml b/app/src/main/res/values-tr/updater_strings.xml
+index 3c6dd02..8a72511 100644
+--- a/app/src/main/res/values-tr/updater_strings.xml
++++ b/app/src/main/res/values-tr/updater_strings.xml
+@@ -20,7 +20,7 @@
+     <string name="installing_system_update">Sistem\ngüncellemesi yükleniyor…</string>
+     <string name="making_update_ready">Güncelleme hazırlanıyor, bu biraz zaman alabilir</string>
+     <string name="your_app_getting_better">Uygulamanız daha da iyiye gidiyor…</string>
+-    <string name="update_includes_features">Bu güncelleme, Echo Music %1$s\'den yeni özellikler ve en son güncellemeleri içeriyor, bu da uygulamanızı daha da kullanışlı hale getiriyor. Daha fazla bilgi için %2$s adresini ziyaret edin.</string>
++    <string name="update_includes_features">Bu güncelleme, Bytes Music %1$s\'den yeni özellikler ve en son güncellemeleri içeriyor, bu da uygulamanızı daha da kullanışlı hale getiriyor. Daha fazla bilgi için %2$s adresini ziyaret edin.</string>
+     <string name="whats_new">Yeni neler var?</string>
+     <string name="update_available">Güncelleme mevcut</string>
+     <string name="checking_for_updates">Güncellemeler kontrol ediliyor…</string>
+@@ -35,7 +35,7 @@
+     <string name="mobile_network_warning">Mobil ağ üzerinden veya dolaşımdayken güncelleme indirmek ek ücretlere neden olabilir.</string>
+     <string name="update_size">Güncelleme boyutu: %1$s MB</string>
+     <string name="check_internet_connection">İnternet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+-    <string name="echo_music_version">Echo Music versiyon %1$s</string>
++    <string name="echo_music_version">Bytes Music versiyon %1$s</string>
+     <string name="last_checked">Son kontrol: %1$s</string>
+     <string name="install">Yükle</string>
+     <string name="check_for_update">Güncelleme kontrol et</string>
+@@ -51,7 +51,7 @@
+     <string name="update_notifications_subtitle">Yeni bir güncelleme bulunduğunda bir bildirim göster</string>
+ 
+ 
+-    <string name="echo_music_title">Echo Music</string>
++    <string name="echo_music_title">Bytes Music</string>
+     <string name="developer_section">GELİŞTİRİCİ</string>
+     <string name="collaborator_section">İŞBİRLİKÇİ</string>
+     <string name="app_info_section">UYGULAMA BİLGİSİ</string>
+diff --git a/app/src/main/res/values-uk/strings.xml b/app/src/main/res/values-uk/strings.xml
+index 0a43588..2252523 100644
+--- a/app/src/main/res/values-uk/strings.xml
++++ b/app/src/main/res/values-uk/strings.xml
+@@ -362,7 +362,7 @@
+     <string name="listen_together_smart_resync">Розумна ресинхронізація мережі</string>
+     <string name="listen_together_smart_resync_desc">Автоматично наздоганяти хоста після розриву з\'єднання</string>
+     <string name="spotify_import_title">Імпортувати із Spotify</string>
+-    <string name="spotify_import_desc">Підключіть Spotify, виберіть плейлісти та скопіюйте їх у локальні плейлісти Echo Music.</string>
++    <string name="spotify_import_desc">Підключіть Spotify, виберіть плейлісти та скопіюйте їх у локальні плейлісти Bytes Music.</string>
+     <string name="spotify_connect">Підключити Spotify</string>
+     <string name="spotify_refresh">Оновити бібліотеку Spotify</string>
+     <string name="spotify_select_sources">Виберіть плейлисти Spotify</string>
+@@ -388,7 +388,7 @@
+     <string name="spotify_waiting_for_login">Очікування входу в Spotify</string>
+     <string name="export_directory_unavailable">Не вдалося отримати доступ до папки експорту на цьому пристрої. Будь ласка, вкажіть її вручну.</string>
+     <string name="loading">Завантаження</string>
+-    <string name="listen_on_echo_music">Слухати на Echo Music</string>
++    <string name="listen_on_echo_music">Слухати на Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Розпізнати музику</string>
+     <string name="echo_brain_beta">Echo Brain (Бета)</string>
+     <string name="echo_brain_enable">Увімкнути Echo Brain</string>
+diff --git a/app/src/main/res/values-vi/strings.xml b/app/src/main/res/values-vi/strings.xml
+index 0965f36..64584fb 100644
+--- a/app/src/main/res/values-vi/strings.xml
++++ b/app/src/main/res/values-vi/strings.xml
+@@ -326,7 +326,7 @@
+     <string name="listen_together_smart_resync">Đồng bộ lại mạng thông minh</string>
+     <string name="listen_together_smart_resync_desc">Tự động bắt kịp máy chủ sau khi mất kết nối</string>
+     <string name="spotify_import_title">Nhập từ Spotify</string>
+-    <string name="spotify_import_desc">Kết nối Spotify, chọn danh sách phát và phản chiếu chúng vào danh sách phát Echo Music cục bộ.</string>
++    <string name="spotify_import_desc">Kết nối Spotify, chọn danh sách phát và phản chiếu chúng vào danh sách phát Bytes Music cục bộ.</string>
+     <string name="spotify_connect">Kết nối Spotify</string>
+     <string name="spotify_refresh">Làm mới thư viện Spotify</string>
+     <string name="spotify_select_sources">Chọn danh sách phát Spotify</string>
+@@ -389,7 +389,7 @@
+     <string name="recognition_notification_processing">Đang nhận diện…</string>
+     <string name="recognition_notification_no_match">Không tìm thấy kết quả phù hợp</string>
+     <string name="recognition_notification_failed">Nhận diện thất bại</string>
+-    <string name="listen_on_echo_music">Nghe trên Echo Music</string>
++    <string name="listen_on_echo_music">Nghe trên Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Nhận diện nhạc</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Bật Echo Brain</string>
+diff --git a/app/src/main/res/values-wae/strings.xml b/app/src/main/res/values-wae/strings.xml
+index 0786592..5e77ab5 100644
+--- a/app/src/main/res/values-wae/strings.xml
++++ b/app/src/main/res/values-wae/strings.xml
+@@ -392,7 +392,7 @@
+     <string name="recognition_notification_processing">Wird erkannt…</string>
+     <string name="recognition_notification_no_match">Kei Treffer gfunde</string>
+     <string name="recognition_notification_failed">Erchennig fählgschlage</string>
+-    <string name="listen_on_echo_music">Uf Echo Music lose</string>
++    <string name="listen_on_echo_music">Uf Bytes Music lose</string>
+     <string name="qs_tile_music_recognizer">Müsig erkenne</string>
+     <string name="echo_brain_beta">Echo Brain (Beta)</string>
+     <string name="echo_brain_enable">Echo Brain aktiviere</string>
+diff --git a/app/src/main/res/values-zh-rCN/strings.xml b/app/src/main/res/values-zh-rCN/strings.xml
+index 34c05f8..709a106 100644
+--- a/app/src/main/res/values-zh-rCN/strings.xml
++++ b/app/src/main/res/values-zh-rCN/strings.xml
+@@ -332,7 +332,7 @@
+     <string name="listen_together_smart_resync">智能网络重新同步</string>
+     <string name="listen_together_smart_resync_desc">连接断开后自动与主机同步</string>
+     <string name="spotify_import_title">从 Spotify 导入</string>
+-    <string name="spotify_import_desc">连接 Spotify，选择播放列表，并将其镜像到本地 Echo Music 播放列表。</string>
++    <string name="spotify_import_desc">连接 Spotify，选择播放列表，并将其镜像到本地 Bytes Music 播放列表。</string>
+     <string name="spotify_connect">连接 Spotify</string>
+     <string name="spotify_refresh">刷新 Spotify 媒体库</string>
+     <string name="spotify_select_sources">选择 Spotify 播放列表</string>
+@@ -392,7 +392,7 @@
+     <string name="recognition_notification_processing">正在识别…</string>
+     <string name="recognition_notification_no_match">未找到匹配项</string>
+     <string name="recognition_notification_failed">识别失败</string>
+-    <string name="listen_on_echo_music">在 Echo Music 中收听</string>
++    <string name="listen_on_echo_music">在 Bytes Music 中收听</string>
+     <string name="qs_tile_music_recognizer">识别音乐</string>
+     <string name="echo_brain_beta">Echo Brain（测试版）</string>
+     <string name="echo_brain_enable">启用 Echo Brain</string>
+diff --git a/app/src/main/res/values-zh-rTW/strings.xml b/app/src/main/res/values-zh-rTW/strings.xml
+index 2cd2b60..ec8a325 100644
+--- a/app/src/main/res/values-zh-rTW/strings.xml
++++ b/app/src/main/res/values-zh-rTW/strings.xml
+@@ -329,7 +329,7 @@
+     <string name="listen_together_smart_resync">智慧網路重新同步</string>
+     <string name="listen_together_smart_resync_desc">連線中斷後自動與主持人同步</string>
+     <string name="spotify_import_title">從 Spotify 匯入</string>
+-    <string name="spotify_import_desc">連接 Spotify，選擇播放清單，並將其鏡像到本機 Echo Music 播放清單。</string>
++    <string name="spotify_import_desc">連接 Spotify，選擇播放清單，並將其鏡像到本機 Bytes Music 播放清單。</string>
+     <string name="spotify_connect">連接 Spotify</string>
+     <string name="spotify_refresh">重新整理 Spotify 媒體庫</string>
+     <string name="spotify_select_sources">選擇 Spotify 播放清單</string>
+@@ -392,7 +392,7 @@
+     <string name="recognition_notification_processing">正在辨識…</string>
+     <string name="recognition_notification_no_match">找不到相符結果</string>
+     <string name="recognition_notification_failed">辨識失敗</string>
+-    <string name="listen_on_echo_music">在 Echo Music 上聆聽</string>
++    <string name="listen_on_echo_music">在 Bytes Music 上聆聽</string>
+     <string name="qs_tile_music_recognizer">辨識音樂</string>
+     <string name="echo_brain_beta">Echo Brain（測試版）</string>
+     <string name="echo_brain_enable">啟用 Echo Brain</string>
+diff --git a/app/src/main/res/values/app_name.xml b/app/src/main/res/values/app_name.xml
+index 6a56c1d..b61ee61 100644
+--- a/app/src/main/res/values/app_name.xml
++++ b/app/src/main/res/values/app_name.xml
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-    <string name="app_name">Echo Music</string>
++    <string name="app_name">Bytes Music</string>
+ </resources>
+\ No newline at end of file
+diff --git a/app/src/main/res/values/echo_strings.xml b/app/src/main/res/values/echo_strings.xml
+index c2e1074..a52c192 100644
+--- a/app/src/main/res/values/echo_strings.xml
++++ b/app/src/main/res/values/echo_strings.xml
+@@ -626,7 +626,7 @@
+     <string name="playback_progress">Playback progress</string>
+     <string name="widget_playing_on">Playing on</string>
+     <string name="widget_this_phone">This Phone</string>
+-    <string name="widget_echo_music">Echo Music</string>
++    <string name="widget_echo_music">Bytes Music</string>
+     <string name="widget_queue">Queue</string>
+     <string name="widget_cast">Cast</string>
+     <string name="widget_options">More options</string>
+@@ -747,7 +747,7 @@
+     <string name="ai_lyrics_translation">AI Hub</string>
+     <string name="contribute_to_lossless">Contribute to Lossless Music</string>
+     <string name="lossless_music_hub">Lossless Music Hub</string>
+-    <string name="lossless_desc">Add high-fidelity lossless .flac audio to the Echo Music ecosystem. Max file size: 99MB.</string>
++    <string name="lossless_desc">Add high-fidelity lossless .flac audio to the Bytes Music ecosystem. Max file size: 99MB.</string>
+     <string name="login_with_github">Log in with GitHub</string>
+     <string name="lossless_audio_file">Lossless Audio File</string>
+     <string name="choose_file">Choose .flac file (Max 99MB)</string>
+@@ -861,7 +861,7 @@
+     <string name="delete_from_history">Delete from history</string>
+     <string name="re_listen">Re-listen</string>
+     <string name="hold_to_recognize">Hold search icon to recognize music</string>
+-    <string name="play_on_app">Play on Echo Music</string>
++    <string name="play_on_app">Play on Bytes Music</string>
+     <string name="recognized_track">Recognized Track</string>
+ 
+     <!-- CSV Import Strings -->
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index 6004dcc..41f3de1 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -488,7 +488,7 @@
+     <string name="listen_together_smart_resync">Smart Network Resync</string>
+     <string name="listen_together_smart_resync_desc">Automatically catch up with the host after a connection drop</string>
+     <string name="spotify_import_title">Import From Spotify</string>
+-    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them into local Echo Music playlists.</string>
++    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them into local Bytes Music playlists.</string>
+     <string name="spotify_connect">Connect Spotify</string>
+     <string name="spotify_refresh">Refresh Spotify library</string>
+     <string name="spotify_select_sources">Select Spotify playlists</string>
+@@ -541,7 +541,7 @@
+     <string name="recognition_notification_processing">Identifying…</string>
+     <string name="recognition_notification_no_match">No match found</string>
+     <string name="recognition_notification_failed">Recognition failed</string>
+-    <string name="listen_on_echo_music">Listen on Echo Music</string>
++    <string name="listen_on_echo_music">Listen on Bytes Music</string>
+     <string name="qs_tile_music_recognizer">Recognize music</string>
+     <string name="listenbrainz_scrobbling">ListenBrainz scrobbling</string>
+     <string name="listenbrainz_scrobbling_description">Automatically submit your listened tracks to ListenBrainz</string>
+diff --git a/app/src/main/res/values/updater_strings.xml b/app/src/main/res/values/updater_strings.xml
+index ef2f3d1..5bba64c 100644
+--- a/app/src/main/res/values/updater_strings.xml
++++ b/app/src/main/res/values/updater_strings.xml
+@@ -20,7 +20,7 @@
+     <string name="installing_system_update">Installing system\nupdate…</string>
+     <string name="making_update_ready">Making Update ready, this may take a while</string>
+     <string name="your_app_getting_better">Your App is getting even better…</string>
+-    <string name="update_includes_features">This update includes new features and the latest from Echo Music %1$s, making your app even more helpful. Learn more at %2$s.</string>
++    <string name="update_includes_features">This update includes new features and the latest from Bytes Music %1$s, making your app even more helpful. Learn more at %2$s.</string>
+     <string name="whats_new">What\'s new?</string>
+     <string name="update_available">Update</string>
+     <string name="checking_for_updates">Checking for updates…</string>
+@@ -35,7 +35,7 @@
+     <string name="mobile_network_warning">Downloading updates over a mobile network or while roaming may cause additional charges.</string>
+     <string name="update_size">Update size: %1$s MB</string>
+     <string name="check_internet_connection">Check your internet connection and try again.</string>
+-    <string name="echo_music_version">Echo Music version %1$s</string>
++    <string name="echo_music_version">Bytes Music version %1$s</string>
+     <string name="last_checked">Last checked: %1$s</string>
+     <string name="install">Install</string>
+     <string name="check_for_update">Check for update</string>
+@@ -53,7 +53,7 @@
+     <string name="later">Later</string>
+ 
+ 
+-    <string name="echo_music_title">Echo Music</string>
++    <string name="echo_music_title">Bytes Music</string>
+     <string name="developer_section">DEVELOPER</string>
+     <string name="collaborator_section">COLLABORATOR</string>
+     <string name="app_info_section">APP INFO</string>
+diff --git a/app/src/main/res/xml/shortcuts.xml b/app/src/main/res/xml/shortcuts.xml
+index 7af00a0..65af278 100644
+--- a/app/src/main/res/xml/shortcuts.xml
++++ b/app/src/main/res/xml/shortcuts.xml
+@@ -8,7 +8,7 @@
+         <intent
+             android:action="echo.music.iad1tya.action.SEARCH"
+             android:targetClass="echo.music.iad1tya.MainActivity"
+-            android:targetPackage="echo.music.iad1tya" />
++            android:targetPackage="com.bytesmusic.app" />
+     </shortcut>
+     <shortcut
+         android:enabled="true"
+@@ -18,6 +18,6 @@
+         <intent
+             android:action="echo.music.iad1tya.action.LIBRARY"
+             android:targetClass="echo.music.iad1tya.MainActivity"
+-            android:targetPackage="echo.music.iad1tya" />
++            android:targetPackage="com.bytesmusic.app" />
+     </shortcut>
+ </shortcuts>

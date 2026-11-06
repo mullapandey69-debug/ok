@@ -187,7 +187,7 @@ object WrappedShareHelper {
       color = 0x24FFFFFF.toInt()
     }
 
-    // 2. Header: Echo Music Logo + Wordmark + 2026 WRAPPED
+    // 2. Header: Bytes Music Logo + Wordmark + 2026 WRAPPED
     try {
       val logoDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_launcher_nobg)
       if (logoDrawable != null) {
@@ -208,7 +208,7 @@ object WrappedShareHelper {
       letterSpacing = -0.04f
       typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
-    canvas.drawText("Echo Music", marginX + 70f, 156f, wordmarkPaint)
+    canvas.drawText("Bytes Music", marginX + 70f, 156f, wordmarkPaint)
 
     val yearPaint = Paint().apply {
       isAntiAlias = true
@@ -525,7 +525,7 @@ object WrappedShareHelper {
         putExtra(Intent.EXTRA_STREAM, uri)
         putExtra(
           Intent.EXTRA_TEXT,
-          "Here is my ${data.yearLabel} Wrapped on Echo Music! 🎵\nTop Song: ${data.topSong?.title ?: "Various"}\nTop Artist: ${data.topArtist?.title ?: "Various"}\nPersona: ${data.dominantVibe}"
+          "Here is my ${data.yearLabel} Wrapped on Bytes Music! 🎵\nTop Song: ${data.topSong?.title ?: "Various"}\nTop Artist: ${data.topArtist?.title ?: "Various"}\nPersona: ${data.dominantVibe}"
         )
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       }
